@@ -229,33 +229,33 @@ plots.est.20 <- conDen.Plot.est(df= as.data.frame(established.20))
 
 setwd(figure.dir)
 
-png("04_ConditionalPlots_Inv_5Y", width = 700, height = 600)
+png("04_ConditionalPlots_Inv_5Y.png", width = 700, height = 600)
 plots.inv.5
 dev.off()
 
-png("04_ConditionalPlots_Inv_10Y", width = 700, height = 600)
+png("04_ConditionalPlots_Inv_10Y.png", width = 700, height = 600)
 plots.inv.10 
 dev.off()
 
-png("04_ConditionalPlots_Inv_20Y", width = 700, height = 600)
+png("04_ConditionalPlots_Inv_20Y.png", width = 700, height = 600)
 plots.inv.20 
 dev.off()
 
-png("04_ConditionalPlots_Est_5Y", width = 700, height = 600)
+png("04_ConditionalPlots_Est_5Y.png", width = 700, height = 600)
 plots.est.5 
 dev.off()
 
-png("04_ConditionalPlots_Est_10Y", width = 700, height = 600)
+png("04_ConditionalPlots_Est_10Y.png", width = 700, height = 600)
 plots.est.10 
 dev.off()
 
-png("04_ConditionalPlots_Est_20Y", width = 700, height = 600)
+png("04_ConditionalPlots_Est_20Y.png", width = 700, height = 600)
 plots.est.20 
 dev.off()
 
 
 
-png("04_STREAM_PartialPlots_052023", width = 200, height = 200)
+png("04_STREAM_PartialPlots_052023.png", width = 200, height = 200)
 cdplot(as.factor(RUST) ~ StreamDen, data=as.data.frame(all.5), col=c("black", "white"), ylab="Conditional Density", 
        main= '', xlab="")
 dev.off()
