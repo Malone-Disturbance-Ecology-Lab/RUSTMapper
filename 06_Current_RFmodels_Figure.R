@@ -12,8 +12,8 @@ data.dir <- "/Volumes/MaloneLab/Research/RUSTMAPPER"
 figure.dir <- "/Users/sm3466/Dropbox (YSE)/Research/RUSTMapper/FIGURES"
 setwd(data.dir)
 
-ensemble.est <- rast( paste(data.dir,"/Ensemble_2000-2099_EST.tif", sep=""))
-ensemble.inv <- rast( paste(data.dir,"/Ensemble_2000-2099_INV.tif", sep=""))
+ensemble.est <- rast( paste(data.dir,"/Ensemble_1980-2099_EST.tif", sep=""))
+ensemble.inv <- rast( paste(data.dir,"/Ensemble_1980-2099_INV.tif", sep=""))
 
 AOI = AOI::aoi_get(state = c("CO", "WA", "OR", "CA", "MT", "ID", "UT", "AZ", "NV", "WY", "NM")) %>% st_transform(crs(ensemble.inv)) %>% st_as_sf
 
@@ -119,11 +119,6 @@ names(ensemble) <- c('est.mean', "est.sd", 'inv.mean', "inv.sd")
 df.ensemble <- as.data.frame(ensemble) %>% na.omit()
 cor(df.ensemble$est.mean,df.ensemble$inv.mean, method = "pearson")
 summary(lm(df.ensemble$est.mean~df.ensemble$inv.mean))
-
-# SUMMARY TABLE:
-
-
-
 
 #EOF
 

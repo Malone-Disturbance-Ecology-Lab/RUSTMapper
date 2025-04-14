@@ -12,8 +12,8 @@ figure.dir <- "/Users/sm3466/Dropbox (YSE)/Research/RUSTMapper/FIGURES"
 
 setwd(data.dir)
 
-ensemble.est <- rast( paste(data.dir,"/Ensemble_2000-2099_EST.tif", sep=""))
-ensemble.inv <- rast( paste(data.dir,"/Ensemble_2000-2099_INV.tif", sep=""))
+ensemble.est <- rast( paste(data.dir,"/Ensemble_1980-2099_EST.tif", sep=""))
+ensemble.inv <- rast( paste(data.dir,"/Ensemble_1980-2099_INV.tif", sep=""))
 
 
 load( "Final_ShapeFiles.RDATA")
