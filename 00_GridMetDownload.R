@@ -7,11 +7,12 @@ library(AOI)
 library(climateR)
 library(terra)
 
+data.dir <- "/Volumes/MaloneLab/Research/RUSTMAPPER"
+setwd(data.dir)
+
 # create spatial layers: ####
 
 AOI = aoi_get(state = c("CO", "WA", "OR", "CA", "MT", "ID", "UT", "AZ", "NV", "WY", "NM", "TX", "ND", "SD", "KS", "NE"))
-
-setwd("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Spatial/GRIDMET_CURRENT")
 
 # get climate layers: ####
 
@@ -28,7 +29,10 @@ endDate.fall = seq(as.Date('1980-10-31'), as.Date('2023-10-31'), by='year')
 startDate.winter = seq(as.Date('1980-01-01'), as.Date('2023-01-01'), by='year')
 endDate.winter = seq(as.Date('1980-03-31'), as.Date('2023-03-31'), by='year')
 
-mydir <- "/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Spatial/GRIDMET_CURRENT"
+mydir <- paste(data.dir,"/GRIDMET_CURRENT", sep ="")
+
+setwd(mydir)
+
 delfiles <- dir(path=mydir , pattern="*json")
 file.remove(file.path(mydir, delfiles))
 

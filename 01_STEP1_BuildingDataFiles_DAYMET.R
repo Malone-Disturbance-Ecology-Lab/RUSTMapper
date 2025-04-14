@@ -8,20 +8,26 @@ library(rgdal)
 library(sf)
 library(AOI)
 library(terra)
+library(tidyverse)
 
-load( "/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/04042023/Final_ShapeFiles.RDATA")
+data.dir <- "/Volumes/MaloneLab/Research/RUSTMAPPER"
+setwd(data.dir)
+load( "Final_ShapeFiles.RDATA")
 
 AOI = aoi_get(state = c("CO", "WA", "OR", "CA", "MT", "ID", "UT", "AZ", "NV", "WY", "NM", "TX"))
 
 # Base file Development from PI Files: ####
 
 # Import WPBR data files:
+projcrs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+wpbr <- read.csv("WWETAC_040423_CorrectedOriginal withNewData_040425.csv") %>%
+  mutate( LAT = POINT_X, LON = POINT_Y) %>% st_as_sf(coords = c("POINT_X", "POINT_Y"), crs = projcrs)
 
-wpbr <- st_read("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/04042023",  "WWETAC_040423")
+ggplot() + geom_sf(data= AOI) + geom_sf(data =wpbr )
 
 # Extract STREAM Density:
 
-stream <- rast('~/Dropbox (YSE)/Research/WPBR/StreamDensity_WestUSA_1km.tif')
+stream <- rast('StreamDensity_WestUSA_1km.tif')
 streamDen <-stream$Density
 streamDen[is.na(streamDen)] <- 0
 
@@ -45,9 +51,9 @@ wpbr$WPBR_stat <- as.factor(wpbr$WPBR_stat)
 # get topography information:
 wpbr.sf <- st_transform(wpbr.sf, '+proj=longlat +datum=WGS84 +no_defs') # must change proj for elev tool
 
-elev <- rast('/Users/sm3466/Dropbox (YSE)/Research/WPBR/Shapefiles/DEM_2021.tif' )
-tpi <- rast('/Users/sm3466/Dropbox (YSE)/Research/WPBR/Shapefiles/tpi_2021.tif')
-tri <-rast('/Users/sm3466/Dropbox (YSE)/Research/WPBR/Shapefiles/tri_2021.tif')
+elev <- rast('DEM_2021.tif')
+tpi <- rast('tpi_2021.tif')
+tri <-rast('tri_2021.tif')
 
 wpbr.sf$ID <- seq.int(nrow(wpbr.sf))
 wpbr.sf$TPI <- terra::extract( tpi, wpbr.sf, method='simple',df=TRUE)[,2]
@@ -55,10 +61,10 @@ wpbr.sf$TRI <- terra::extract( tri, wpbr.sf, method='simple',df=TRUE)[,2]
 
 wpbr.sf <- wpbr.sf %>% st_transform(crs(wp.gb))%>% distinct(.keep_all = TRUE) 
 
-save(wpbr.sf, file='/Users/sm3466/Dropbox (YSE)/Research/WPBR/WPBR_plots2023.RDATA')
+save(wpbr.sf, file='WPBR_plots2023.RDATA')
 
 CALC_H_ZONE <- function(Tmin){
-  H_Zone <- read.csv( '~/YSE Dropbox/Sparkle Malone/Research/WPBR/NewData/HardinessZones.csv')
+  H_Zone <- read.csv( 'HardinessZones.csv')
   Tmin <- Tmin %>% round(1)
   H_Zone.calc <- NA
   H_Zone.calc[ Tmin <= H_Zone$Temp_upper[H_Zone$H_Zone == 1] ] <- 1
@@ -78,21 +84,20 @@ CALC_H_ZONE <- function(Tmin){
 }
 #########
 
-load( '/Users/sm3466/Dropbox (YSE)/Research/WPBR/WPBR_plots2023.RDATA')
+load( 'WPBR_plots2023.RDATA')
 AOI = aoi_get(state = c("CO", "WA", "OR", "CA", "MT", "ID", "UT", "AZ", "NV", "WY", "NM", "TX"))
 summary(wpbr.sf$YEAR_LAST)
 data <- wpbr.sf  %>% st_transform( st_crs(AOI))
 data$YEAR_LAST <- as.numeric(data$YEAR_LAST)
-data <- data %>% filter(YEAR_LAST > 0 )
+data <- data %>% filter(YEAR_LAST > 0, YEAR_LAST < 2025 )
 
 # Create a DF to store the data:
 subsample <- data %>% distinct( ) %>% as.data.frame(xy=T)
 
 # some points are lost because they have the same latlong
-
 subsample %>% names()
-subsample$POINT_Y
-subsample$POINT_X
+subsample$POINT_Y <- subsample$LON
+subsample$POINT_X <- subsample$LAT
 
 ########## Climate Date ##########
 #________________________________________________________________-________________________________
@@ -108,7 +113,7 @@ subsample <- subsample %>% filter (YEAR_LAST > 1985 ) # Daymet starts in 1980
 subsample.temp <- subsample
 subsample %>% names()
 
-for(i in 1: length( subsample$YEAR_LAST) ){
+for(i in 6170: length( subsample$YEAR_LAST) ){
   print(i)
   data1 <- download_daymet(site = "SparkleSparkle",
                            lat =  subsample$POINT_Y[i],
@@ -381,5 +386,8 @@ data.20years$H_Zone <- CALC_H_ZONE(Tmin=data.20years$Tmin_Winter)
 
 data.20years$Tmin_Winter[ is.na(data.20years$H_Zone)]
 
-save(data.5years, data.10years, data.20years ,file='/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/WPBR_plots_DAYMET.RDATA')
+save(wpbr, data.5years, data.10years, data.20years ,file='WPBR_plots_DAYMET.RDATA')
 
+
+
+message(" Next RUN 02_VariableSelection_DAYMET")

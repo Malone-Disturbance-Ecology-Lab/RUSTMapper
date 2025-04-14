@@ -6,15 +6,19 @@ library(AOI)
 library(terra)
 library(tidyverse)
 
+
+data.dir <- "/Volumes/MaloneLab/Research/RUSTMAPPER"
+setwd(data.dir)
+
 ## Prepare shapefiles for use in other workflows:
 
 AOI = aoi_get(state = c("CO", "WA", "OR", "CA", "MT", "ID", "UT", "AZ", "NV", "WY", "NM")) %>% st_transform(crs('+proj=lcc +lat_0=42.5 +lon_0=-100 +lat_1=25 +lat_2=60 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs ')) %>% st_as_sf
 
 AOI.union = AOI %>% st_union %>% st_as_sf
 
-invasion.regions <- read_sf("/Users/sm3466/Dropbox (YSE)/Research/WPBR/Shapefiles/WPBR_ECOGREGIONS_POLYS", "WPBR_INVASION_ECO_CLIPPED") %>% st_transform( crs(AOI)) %>% st_make_valid
+invasion.regions <- read_sf("/Shapefiles/WPBR_ECOGREGIONS_POLYS", "WPBR_INVASION_ECO_CLIPPED") %>% st_transform( crs(AOI)) %>% st_make_valid
 
-load( "/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/04042023/ShapeFiles.RDATA")
+load( "ShapeFiles.RDATA")
 
 wp <- wp %>% st_as_sf %>% st_transform(crs(AOI)) %>% st_intersection(AOI) %>% mutate(region='all') %>% st_make_valid() %>% st_as_sf %>% subset(select= region) %>%  group_by(region) %>% summarize() 
 
@@ -44,7 +48,7 @@ PILO <- PILO %>%   st_transform( crs(AOI)) %>% st_intersection(AOI) %>% st_make_
 PIAR <-  PIAR %>%   st_transform( crs(AOI)) %>% st_intersection(AOI) %>% st_make_valid
 PIST <-  PIST %>%   st_transform( crs(AOI)) %>% st_intersection(AOI) %>% st_make_valid
 
-invasion.regions <- read_sf("/Users/sm3466/Dropbox (YSE)/Research/WPBR/Shapefiles/WPBR_ECOGREGIONS_POLYS", "WPBR_INVASION_ECO_CLIPPED") %>% st_transform( crs(AOI)) %>% st_make_valid
+invasion.regions <- read_sf("/Shapefiles/WPBR_ECOGREGIONS_POLYS", "WPBR_INVASION_ECO_CLIPPED") %>% st_transform( crs(AOI)) %>% st_make_valid
 
 # Make invasion/ southern Species
 wp.s <- wp %>% st_intersection(invasion.regions)
@@ -88,5 +92,5 @@ wp.ssn.s, wp.sw.s,
 wp, wp.cce, wp.gb, wp.gye, wp.pnw, wp.sr,
 wp.ssn, wp.pnw, wp.sw,
 PIBA.s, PIAL.s, PIFL.s, PILO.s, PIAR.s, PIST.s, invasion.regions,
-file="/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/Final_ShapeFiles.RDATA")
+file="Final_ShapeFiles.RDATA")
 

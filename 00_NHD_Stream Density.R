@@ -88,6 +88,6 @@ STREAM$Density <- STREAM$StreamLength_lyr.1 / STREAM$area
 STREAM$Density %>% plot
 STREAM$Density %>% hist
 
-terra::writeRaster( STREAM, '~/Dropbox (YSE)/Research/WPBR/StreamDensity_WestUSA_1km.tif',overwrite=TRUE)
+terra::writeRaster( STREAM, '/Volumes/MaloneLab/Research/RUSTMAPPER/StreamDensity_WestUSA_1km.tif',overwrite=TRUE)
 
 # Compare

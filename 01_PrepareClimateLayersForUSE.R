@@ -4,11 +4,18 @@ library(tidyverse)
 library(sf)
 library(AOI)
 
-mydir <- "/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Spatial/GRIDMET_CURRENT"
+data.dir <- "/Volumes/MaloneLab/Research/RUSTMAPPER"
+figure.dir <- "/Users/sm3466/Dropbox (YSE)/Research/RUSTMapper/FIGURES"
+setwd(data.dir)
+
+mydir <- "/GRIDMET_CURRENT"
 
 delfiles <- dir(path=mydir , pattern="*json")
 file.remove(file.path(mydir, delfiles))
 
+
+AOI = AOI::aoi_get(state = c("CO", "WA", "OR", "CA", "MT", "ID", "UT", "AZ", "NV", "WY", "NM"))
+AOI <- st_transform( AOI, 4326)
 
 # Imports the climate change data:
 source( '/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/00_FUNCTION_ComplieClimteRaters.R')

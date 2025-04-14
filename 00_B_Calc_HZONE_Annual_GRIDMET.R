@@ -7,16 +7,24 @@ rm(list=ls())
 # Imports the climate change data:
 AOI = aoi_get(state = c("CO", "WA", "OR", "CA", "MT", "ID", "UT", "AZ", "NV", "WY", "NM", "TX"))
 
-mydir <- "/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Spatial/GRIDMET_CURRENT"
+data.dir <- "/Volumes/MaloneLab/Research/RUSTMAPPER"
+figure.dir <- "/Users/sm3466/Dropbox (YSE)/Research/RUSTMapper/FIGURES"
+setwd(data.dir)
+
+source( '/Users/sm3466/Dropbox (YSE)/Research/RUSTMapper/01_PrepareClimateLayersForUSE.R')
+
+mydir <- paste( data.dir,"/GRIDMET_CURRENT",sep="")
 
 delfiles <- dir(path=mydir , pattern="*json")
 file.remove(file.path(mydir, delfiles))
-source( '/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/FUNCTION_ComplieClimteRaters.R')
+
+source( '/Users/sm3466/Dropbox (YSE)/Research/RUSTMapper/00_FUNCTION_ComplieClimteRaters.R')
 
 template <- climate.import.gridmet(pattern = "Tmin_Winter")
 Tmin <- c(climate.import.gridmet(pattern = "Tmin_Winter") , climate.import.future(pattern = "Tmin_Summer") %>% resample(template ))
 
-H_Zone <- read.csv( '~/YSE Dropbox/Sparkle Malone/Research/WPBR/NewData/HardinessZones.csv')
+
+H_Zone <- read.csv(paste(data.dir,'/HardinessZones.csv', sep =""))
 
 CALC_H_ZONE <- function( TMIN, H_ZONE){
   H_Zone_rast <- Tmin
@@ -45,6 +53,6 @@ H_Zone_Tmin.mean <- CALC_H_ZONE(TMIN=Tmin, H_ZONE= H_Zone) %>% focal( w=9, fun=m
 
 H_Zone_annual.filled <- terra::cover( H_Zone_annual, H_Zone_Tmin.mean)
 
-writeRaster(H_Zone_annual.filled,"/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/WPBR/NewData/Spatial/H_Zone_1980-2099.tif",
-            overwrite=T)
+
+writeRaster(H_Zone_annual.filled,paste(data.dir,"/H_Zone_1980-2099.tif", sep =""),overwrite=T)
 

@@ -10,21 +10,27 @@ library(AOI)
 library(terra)
 library(randomForest)
 
+data.dir <- "/Volumes/MaloneLab/Research/RUSTMAPPER"
+figure.dir <- "/Users/sm3466/Dropbox (YSE)/Research/RUSTMapper/FIGURES"
+setwd(data.dir)
+
+# Project Models #####
 # Import Climate Layers 2000-2099+ makes the AOI:
-source( '/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/01_PrepareClimateLayersForUSE.R')
+source( '/Users/sm3466/Dropbox (YSE)/Research/RUSTMapper/01_PrepareClimateLayersForUSE.R')
 
 # Imports the models
-load("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/RF_MODELFIT_Results_DAYMET.RDATA")
+setwd(data.dir)
+load("RF_MODELFIT_Results_DAYMET.RDATA")
 
 # Preparing stream and Hardinesszone layers:
-streamDen <- rast('~/Dropbox (YSE)/Research/WPBR/StreamDensity_WestUSA_1km.tif')[[5]] %>% terra::project(RH_Spring) %>% terra::resample(RH_Spring, method="bilinear")
+streamDen <- rast('StreamDensity_WestUSA_1km.tif')[[5]] %>% terra::project(RH_Spring) %>% terra::resample(RH_Spring, method="bilinear")
 streamDen[is.na(streamDen)] <- 0
 names(streamDen) <- "StreamDen"
 
-H_ZONE <- rast("/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/WPBR/NewData/Spatial/H_Zone_1980-2099.tif") %>% terra::project(RH_Spring) %>% terra::resample(RH_Spring, method="bilinear")
+H_ZONE <- rast("H_Zone_1980-2099.tif") %>% terra::project(RH_Spring) %>% terra::resample(RH_Spring, method="bilinear")
 
-tpi <- rast('/Users/sm3466/Dropbox (YSE)/Research/WPBR/Shapefiles/tpi_2021.tif')%>% terra::project(RH_Spring) %>% terra::resample(RH_Spring, method="bilinear")
-tri <-rast('/Users/sm3466/Dropbox (YSE)/Research/WPBR/Shapefiles/tri_2021.tif') %>% terra::project(RH_Spring) %>% terra::resample(RH_Spring, method="bilinear")
+tpi <- rast('tpi_2021.tif')%>% terra::project(RH_Spring) %>% terra::resample(RH_Spring, method="bilinear")
+tri <-rast('tri_2021.tif') %>% terra::project(RH_Spring) %>% terra::resample(RH_Spring, method="bilinear")
 
 # Functions
 invading.projections <- function(Data){
@@ -52,6 +58,7 @@ established.projections <- function(Data){
 time <- time(H_ZONE) %>% as.numeric
 
 # Ensemble Estimates: ####
+
 for( i in 1:length(time)){
   
   print(i)
@@ -70,7 +77,7 @@ for( i in 1:length(time)){
                    'Tmean_Spring', 'Tmean_Summer', 'Tmean_Fall',
                    'VPD_Spring', 'VPD_Summer', 'VPD_Fall',
                    'VPDmax_Spring', 'VPDmax_Summer', 'VPDmax_Fall',
-                   'RH_Spring', 'RH_Summer', 'RH_Fall', 'StreamDen','H_ZONE', 'TPI', 'TRI')
+                   'RH_Spring', 'RH_Summer', 'RH_Fall', 'StreamDen','H_Zone', 'TPI', 'TRI')
   
   names(Data) <- list.names
   
@@ -79,7 +86,7 @@ for( i in 1:length(time)){
   
   time(inv.ensemble) <- time(time[i])
   time(est.ensemble) <- time(time[i])
-  setwd("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Spatial/Current_RF_Projections")
+  setwd(paste(data.dir,"/Current_RF_Projections",sep=""))
   
   writeRaster( inv.ensemble ,paste('inv.ensemble',  time[i], ".tiff" ,sep="_" ) , overwrite=T)
   writeRaster( est.ensemble ,paste('est.ensemble',  time[i], ".tiff" ,sep="_" ) , overwrite=T)
@@ -125,7 +132,7 @@ for( i in 1:length(time[1:44])){
                    'Tmean_Spring', 'Tmean_Summer', 'Tmean_Fall',
                    'VPD_Spring', 'VPD_Summer', 'VPD_Fall',
                    'VPDmax_Spring', 'VPDmax_Summer', 'VPDmax_Fall',
-                   'RH_Spring', 'RH_Summer', 'RH_Fall', 'StreamDen','H_ZONE','TPI', 'TRI')
+                   'RH_Spring', 'RH_Summer', 'RH_Fall', 'StreamDen','H_Zone','TPI', 'TRI')
   
   names(Data) <- list.names
   
@@ -134,15 +141,63 @@ for( i in 1:length(time[1:44])){
   
   time(inv.ensemble) <- time(time[i])
   time(est.ensemble) <- time(time[i])
-  setwd("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Spatial/Current_RF_Projections/SD")
+  setwd(paste(data.dir,"/Current_RF_Projections/SD",sep=""))
   
   writeRaster( inv.ensemble ,paste('inv.ensemble.sd',  time[i], ".tiff" ,sep="_" ) , overwrite=T)
   writeRaster( est.ensemble ,paste('est.ensemble.sd',  time[i], ".tiff" ,sep="_" ) , overwrite=T)
   
 }
   # Remove all .json files that stand in your way.
-  setwd('/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Spatial/Current_RF_Projections')
+setwd(paste(data.dir,"/Current_RF_Projections",sep=""))
+  file.remove(list.files(pattern = "*.json"))
+
+  setwd(paste(data.dir,"/Current_RF_Projections/SD",sep=""))
   file.remove(list.files(pattern = "*.json"))
   
-  setwd('/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Spatial/Current_RF_Projections/SD')
-  file.remove(list.files(pattern = "*.json"))
+# Ensemble Layers for use: #####
+  
+setwd(data.dir)
+load("Final_ShapeFiles.RDATA")
+  
+# Create a List of the files you want to import
+files.est <- list.files(path=paste(data.dir,"/Current_RF_Projections",sep=""), pattern = "est")
+
+files.inv <- list.files(path=paste(data.dir,"/Current_RF_Projections",sep=""), pattern = "inv")
+  
+  # Create a List of the files you want to import
+files.est.sd <- list.files(path=paste(data.dir,"/Current_RF_Projections/SD",sep=""), pattern = "est")
+  
+files.inv.sd <- list.files(path=paste(data.dir,"/Current_RF_Projections/SD",sep=""), pattern = "inv")
+  
+  setwd(paste(data.dir,"/Current_RF_Projections",sep=""))
+  
+  ensemble.est <- rast(files.est ) %>% mask(wp) %>% crop(AOI)
+  ensemble.inv <- rast(files.inv ) %>% mask(wp.s) %>% crop(AOI)  
+  
+  setwd(paste(data.dir,"/Current_RF_Projections/SD",sep=""))
+  ensemble.est.sd  <- rast(files.est.sd ) %>% mask(wp) %>% crop(AOI)
+  ensemble.inv.sd  <- rast(files.inv.sd  )%>% mask(wp.s) %>% crop(AOI)
+  
+  # Add the time and names into these layers.
+  terra::time(ensemble.est) <- c(seq(1980, 2023, 1),seq(2030, 2099, 1))
+  names(ensemble.est) <- paste("est", c(seq(1980, 2023, 1),seq(2030, 2099, 1)), sep = "-")
+  
+  terra::time(ensemble.inv) <- c(seq(1980, 2023, 1),seq(2030, 2099, 1))
+  names(ensemble.inv) <- paste("inv", c(seq(1980, 2023, 1),seq(2030, 2099, 1)), sep = "-")
+  
+  terra::time(ensemble.est.sd) <- seq(1980, 2023, 1)
+  names(ensemble.est.sd) <- paste("est.sd", seq(1980, 2023, 1), sep = "-")
+  
+  terra::time(ensemble.inv.sd) <- seq(1980, 2023, 1)
+  names(ensemble.inv.sd) <- paste("inv.sd", seq(1980, 2023, 1), sep = "-")
+  
+  rm( files.est,
+      files.inv, 
+      files.inv.sd, files.est.sd)
+  
+  writeRaster(ensemble.est, paste(data.dir,"/Ensemble_2000-2099_EST.tif", sep=""), overwrite=TRUE)
+  writeRaster(ensemble.inv, paste(data.dir,"/Ensemble_2000-2099_INV.tif",sep=""), overwrite=TRUE)
+  
+  writeRaster(ensemble.est.sd, paste(data.dir,"/Ensemble_SD_2000-2099_EST.tif", sep=""), overwrite=TRUE)
+  writeRaster(ensemble.inv.sd, paste(data.dir,"/Ensemble_SD_2000-2099_INV.tif",sep=""), overwrite=TRUE)
+  

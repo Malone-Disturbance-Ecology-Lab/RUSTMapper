@@ -10,14 +10,16 @@ library(ggplot2)
 library(tidyterra)
 library(ggpubr)
 
+data.dir <- "/Volumes/MaloneLab/Research/RUSTMAPPER"
+figure.dir <- "/Users/sm3466/Dropbox (YSE)/Research/RUSTMapper/FIGURES"
+setwd(data.dir)
+
 AOI = AOI::aoi_get(state = c("CO", "WA", "OR", "CA", "MT", "ID", "UT", "AZ", "NV", "WY", "NM"))
 AOI <- st_transform( AOI, 4326)
 
 
-load( "/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/Final_ShapeFiles.RDATA")
-load(file='/Users/sm3466/Dropbox (YSE)/Research/WPBR/WPBR_plots2023.RDATA')
-
-wpbr <- wpbr.sf
+load( "Final_ShapeFiles.RDATA")
+load(file='WPBR_plots_DAYMET.RDATA')
 
 
 # Figure 1  Map: ####
@@ -54,7 +56,7 @@ plots.plot <- ggplot( ) + geom_sf(data=AOI, fill="transparent", colour='black', 
         text = element_text(size = 20))
 
 library(ggpubr)
-setwd("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/FIGURES")
+setwd(figure.dir)
 png("04_Figure1_Map.png", width =700, height = 300)
 ggarrange(regions.plot, plots.plot, Species.plot,
           nrow= 1, ncol= 3, labels =c("a", "b", "c") ,vjust=1)
@@ -71,7 +73,7 @@ projection.plot <- ggplot( ) + geom_sf(data=AOI, fill="white", color="black", lw
   theme(panel.background = element_rect(fill='transparent'), 
         text = element_text(size = 20)) 
 
-setwd("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/FIGURES")
+
 png("04_FigureS1_Map.png", width =500, height = 500)
 ggarrange(projection.plot,
           nrow= 1, ncol= 1)
@@ -86,7 +88,6 @@ data.plot <- ggplot( ) + geom_sf(data=AOI, fill="white", color="black", lwd=0.5)
   theme(panel.background = element_rect(fill='transparent'), 
         text = element_text(size = 20)) 
 
-setwd("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/FIGURES")
 png("04_Figure1_Map_DataPaper.png", width =500, height = 500)
 ggarrange(data.plot ,
           nrow= 1, ncol= 1)
@@ -95,3 +96,18 @@ dev.off()
 wpbr$WPBR_stat %>% length
 wpbr$WPBR_stat[wpbr$WPBR_stat == 'Established'] %>% length
 wpbr$WPBR_stat[wpbr$WPBR_stat == 'Invading'] %>% length
+
+
+(wpbr$WPBR_stat[wpbr$WPBR_stat == 'Invading' & wpbr$RUST ==1] %>% 
+    length / wpbr$WPBR_stat[wpbr$WPBR_stat == 'Invading'] %>% length) *100
+
+(wpbr$WPBR_stat[wpbr$WPBR_stat == 'Invading' & wpbr$RUST ==0] %>% 
+    length / wpbr$WPBR_stat[wpbr$WPBR_stat == 'Invading'] %>% length) *100
+
+(wpbr$WPBR_stat[wpbr$WPBR_stat == 'Established' & wpbr$RUST ==1] %>% 
+    length / wpbr$WPBR_stat[wpbr$WPBR_stat == 'Established'] %>% length) *100
+
+(wpbr$WPBR_stat[wpbr$WPBR_stat == 'Established' & wpbr$RUST ==0] %>% 
+    length / wpbr$WPBR_stat[wpbr$WPBR_stat == 'Established'] %>% length) *100
+
+

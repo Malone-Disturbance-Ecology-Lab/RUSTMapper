@@ -8,12 +8,15 @@ library(AOI)
 # Explore data to determine the limits of model development:
 # Look at the climate change data for the locations:
 
-load("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/RF_MODELFIT_Results_DAYMET.RDATA")
+data.dir <- "/Volumes/MaloneLab/Research/RUSTMAPPER"
+setwd(data.dir)
+
+load("RF_MODELFIT_Results_DAYMET.RDATA")
 
 AOI = aoi_get(state = c("CO", "WA", "OR", "CA", "MT", "ID", "UT", "AZ", "NV", "WY", "NM", "TX"))
 
 # Imports the climate change data:
-source( '/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/00_FUNCTION_ComplieClimteRaters.R')
+source( '00_FUNCTION_ComplieClimteRaters.R')
 
 # Imports current and future climate layers
 template <- climate.import.gridmet(pattern = "PRCP_Fall")

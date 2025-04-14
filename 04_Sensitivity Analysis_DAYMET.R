@@ -5,7 +5,11 @@ library(gridExtra)
 
 rm(list=ls())
 
-load("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/RF_MODELFIT_Results_DAYMET.RDATA")
+data.dir <- "/Volumes/MaloneLab/Research/RUSTMAPPER"
+figure.dir <- "/Users/sm3466/Dropbox (YSE)/Research/RUSTMapper/FIGURES"
+setwd(data.dir)
+
+load("RF_MODELFIT_Results_DAYMET.RDATA")
 
 model.pred <- function(data){
   
@@ -25,11 +29,13 @@ model.pred <- function(data){
   return(data)
 }
 
-# Missing TPI(-147 210)  and TRI (0, 338)!!!!
-stream  <- data.frame( StreamDen= seq(0,9,1 )) 
+# Adjust to match new numbers!
+data.5years %>% names
+stream  <- data.frame( StreamDen= seq(0,30,1 )) 
 
 data.max <- data.5years %>% na.omit %>% group_by(H_Zone) %>% summarise(
   Type = "max",
+  H_Zone = max(H_Zone, na.rm=T),
   TRI = max( TRI, na.rm=T),
   TPI = max( TPI, na.rm=T),
   PRCP_Spring = max( PRCP_Spring, na.rm=T),
@@ -58,6 +64,7 @@ data.max <- data.5years %>% na.omit %>% group_by(H_Zone) %>% summarise(
 
 data.min <- data.5years %>% na.omit %>% group_by(H_Zone) %>% summarise(
   Type = "min",
+  H_Zone = min(H_Zone, na.rm=T),
   TRI = min( TRI, na.rm=T),
   TPI = min( TPI, na.rm=T),
   PRCP_Spring = min( PRCP_Spring, na.rm=T),
@@ -86,6 +93,7 @@ data.min <- data.5years %>% na.omit %>% group_by(H_Zone) %>% summarise(
 
 data.mean <- data.5years %>% na.omit %>% group_by(H_Zone) %>% summarise(
   Type = "mean",
+  H_Zone = mean(H_Zone, na.rm=T),
   TRI = mean( TRI, na.rm=T),
   TPI = mean( TPI, na.rm=T),
   PRCP_Spring = mean( PRCP_Spring, na.rm=T),
@@ -195,8 +203,8 @@ PLOT.H_ZONE <- Sensitivity  %>% ggplot() + geom_smooth(method = 'loess',aes( y =
 
 PLOT.StreamDen <- Sensitivity  %>% ggplot() + geom_smooth(method = 'loess',aes( y = Established, x= StreamDen), col="Black") + geom_smooth(method = 'loess',aes( y = Invading, x= StreamDen), col="Grey50", linetype="dashed") + 
   xlab("STREAM_DEN") + ylab("P(WPBR)") + theme_bw()+ylim(0.2,0.8)+ 
-  annotate( geom="text", x=2.8, y= 0.65, label="Established", col="black", size=8) +
-  annotate( geom="text", x=2, y= 0.25, label="Invading", col="grey50", size=8) +
+  annotate( geom="text", x=12, y= 0.65, label="Established", col="black", size=8) +
+  annotate( geom="text", x=10, y= 0.25, label="Invading", col="grey50", size=8) +
   theme(text = element_text(size = 20))
 
 PLOT.TRI <- Sensitivity.TRI  %>% ggplot() + 
@@ -261,7 +269,7 @@ final.plot <- ggarrange(
              PLOT.VPDmax,
              PLOT.RH, ncol=2,nrow=5, labels =c("a", "b", "c", "d", "e", "f", "g", "h", "i","j"))
 
-setwd("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/FIGURES")
+setwd(figure.dir)
 png("04_SensitivityAnalysis_FIGURE 2.png", width = 500, height = 1000)
 final.plot
 dev.off()
@@ -284,8 +292,8 @@ PLOT.H_ZONE <- Sensitivity  %>% ggplot() + geom_smooth(method = 'loess',aes( y =
 
 PLOT.StreamDen <- Sensitivity  %>% ggplot() + geom_smooth(method = 'loess',aes( y = Established, x= StreamDen), col="Black") + geom_smooth(method = 'loess',aes( y = Invading, x= StreamDen), col="cyan4", linetype="dashed") + 
   xlab("STREAM_DEN") + ylab("P(WPBR)") + theme_bw()+ylim(0.2,0.8)+ 
-  annotate( geom="text", x=2.8, y= 0.65, label="Established", col="black", size=8) +
-  annotate( geom="text", x=2, y= 0.25, label="Invading", col="cyan4", size=8) +
+  annotate( geom="text", x=12, y= 0.65, label="Established", col="black", size=8) +
+  annotate( geom="text", x=10, y= 0.25, label="Invading", col="cyan4", size=8) +
   theme(text = element_text(size = 20))
 
 PLOT.TRI <- Sensitivity.TRI  %>% ggplot() + 
@@ -350,7 +358,7 @@ final.plot <- ggarrange(
   PLOT.VPDmax,
   PLOT.RH, ncol=2,nrow=5, labels =c("a", "b", "c", "d", "e", "f", "g", "h", "i","j"))
 
-setwd("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/FIGURES")
+setwd(figure.dir)
 png("04_SensitivityAnalysis_FIGURE8_ScientificData.png", width = 500, height = 1000)
 final.plot
 dev.off()

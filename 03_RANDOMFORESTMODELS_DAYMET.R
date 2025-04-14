@@ -1,4 +1,4 @@
-# Random forest models (10/2025):
+# Random forest models (04/2025):
 
 rm(list=ls())
 
@@ -9,13 +9,15 @@ library(corrplot)
 library(dplyr)
 library(sf)
 
+data.dir <- "/Volumes/MaloneLab/Research/RUSTMAPPER"
+setwd(data.dir)
+
+load(file = 'WPBR_plots_DAYMET.RDATA')
+
+load("WPBR_Variable_Selction_5_DAYMET.RData")
+
 ##### 5 Years All: #####
-load(file = '/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/WPBR_plots_DAYMET.RDATA')
-
-load("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/WPBR_Variable_Selction_5_DAYMET.RData")
-
-
-data.5 <- data.5years %>% dplyr::filter( RUST <= 1)
+data.5 <- data.5years %>% dplyr::filter( RUST <= 1) %>% mutate(StreamDen = streamDen %>% as.numeric)
 
 # All data models 
 all.5 <- data.5 %>% dplyr::select(c(RUST,vars.m.all.5)) %>% na.omit()
@@ -41,7 +43,7 @@ test.5$MODEL.c[test.5$MODEL < 0.50] <- 0
 (length(test.5$MODEL.c[ test.5$MODEL.c == 1 & test.5$RUST ==1]) + length(test.5$MODEL.c[ test.5$MODEL.c == 0 & test.5$RUST ==0]) )/ length(test.5$RUST) *100
 
 save(vars.m.all.5, all.5, train.5 , test.5, rf.all.5 , auc.all.5, data.5,
-     file="/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/RF_MODELFIT_Results_DAYMET.RDATA")
+     file="RF_MODELFIT_Results_DAYMET.RDATA")
 
 ##### 5 Years Invading: #####
 invading.5 <- data.5 %>% filter(WPBR_stat == "Invading")
@@ -68,12 +70,12 @@ test.5.invading$MODEL <- predict(rf.invading.5, test.5.invading, type = "prob") 
 test.5.invading$MODEL.c[test.5.invading$MODEL >= 0.50] <- 1
 test.5.invading$MODEL.c[test.5.invading$MODEL < 0.50] <- 0
 
-(length(test.5.invading$MODEL.c[ test.5.invading $MODEL.c == 1 & test.5.invading $RUST ==1]) + length(test.5.invading$MODEL.c[ test.5.invading$MODEL.c == 0 & test.5.invading$RUST ==0]) )/ length(test.5.invading $RUST) *100
+(length(test.5.invading$MODEL.c[ test.5.invading$MODEL.c == 1 & test.5.invading$RUST ==1]) + length(test.5.invading$MODEL.c[ test.5.invading$MODEL.c == 0 & test.5.invading$RUST ==0]) )/ length(test.5.invading $RUST) *100
 
 
 save(vars.m.all.5, all.5, train.5 , test.5, rf.all.5 , auc.all.5, data.5,
      vars.m.invading.5, invading.5, train.5.invading , test.5.invading, rf.invading.5 , auc.invading.5,
-     file="/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/RF_MODELFIT_Results_DAYMET.RDATA")
+     file="RF_MODELFIT_Results_DAYMET.RDATA")
 
 ##### 5 Years Established: #####
 
@@ -105,12 +107,13 @@ test.5.established$MODEL.c[test.5.established$MODEL < 0.50] <- 0
 save(vars.m.all.5, all.5, train.5 , test.5, rf.all.5 , auc.all.5, data.5,
      vars.m.invading.5, invading.5, train.5.invading , test.5.invading, rf.invading.5 , auc.invading.5,
      vars.m.established.5, established.5, train.5.established , test.5.established, rf.established.5 , auc.established.5, 
-     file="/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/RF_MODELFIT_Results_DAYMET.RDATA")
+     file="RF_MODELFIT_Results_DAYMET.RDATA")
 
 ##### 10 Years All: #####
-load(file = "/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/WPBR_Variable_Selction_10_DAYMET.RData")
+load(file = "WPBR_Variable_Selction_10_DAYMET.RData")
 
-data.10n <- data.10years %>% filter(RUST < 2) 
+data.10n <- data.10years %>% filter(RUST < 2) %>% mutate(StreamDen = streamDen %>% as.numeric)
+
 # All data models 
 vars.m.all.10 
 
@@ -138,7 +141,7 @@ save(vars.m.all.5, all.5, train.5 , test.5, rf.all.5 , auc.all.5, data.5years,
      vars.m.invading.5, invading.5, train.5.invading , test.5.invading, rf.invading.5 , auc.invading.5,
      vars.m.established.5, established.5, train.5.established , test.5.established, rf.established.5 , auc.established.5, 
      vars.m.all.10, all.10, train.10 , test.10, rf.all.10 , auc.all.10, data.10years,
-     file="/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/RF_MODELFIT_Results_DAYMET.RDATA")
+     file="RF_MODELFIT_Results_DAYMET.RDATA")
 
 ##### 10 Years Invading: #####
 invading.10 <- data.10n %>% filter(WPBR_stat == "Invading")
@@ -176,7 +179,7 @@ save(vars.m.all.5, all.5, train.5 , test.5, rf.all.5 , auc.all.5, data.5,
      vars.m.established.5, established.5, train.5.established , test.5.established, rf.established.5 , auc.established.5,
      vars.m.all.10, all.10, train.10 , test.10, rf.all.10 , auc.all.10, data.10years,
      vars.m.invading.10, invading.10, train.10.invading , test.10.invading, rf.invading.10 , auc.invading.10,
-     file="/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/RF_MODELFIT_Results_DAYMET.RDATA")
+     file="RF_MODELFIT_Results_DAYMET.RDATA")
 
 ##### 10 Years Established: #####
 established.10 <- data.10n %>% filter(WPBR_stat == "Established")
@@ -210,12 +213,12 @@ save(vars.m.all.5, all.5, train.5 , test.5, rf.all.5 , auc.all.5, data.5years,
      vars.m.all.10, all.10, train.10 , test.10, rf.all.10 , auc.all.10, data.10years,
      vars.m.invading.10, invading.10, train.10.invading , test.10.invading, rf.invading.10 , auc.invading.10,
      vars.m.established.10, established.10, train.10.established , test.10.established, rf.established.10 , auc.established.10, 
-     file="/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/RF_MODELFIT_Results_DAYMET.RDATA")
+     file="RF_MODELFIT_Results_DAYMET.RDATA")
 
 ##### 20 Years All: #####
-load(file ="/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/WPBR_Variable_Selction_20_DAYMET.RData")
+load(file ="WPBR_Variable_Selction_20_DAYMET.RData")
 
-data.20 <- data.20years %>% filter( RUST < 2) 
+data.20 <- data.20years %>% filter( RUST < 2) %>% mutate(StreamDen = streamDen %>% as.numeric)
 
 # All data models 
 vars.m.all.20 
@@ -248,7 +251,7 @@ save(vars.m.all.5, all.5, train.5 , test.5, rf.all.5 , auc.all.5, data.5years,
      vars.m.established.10, established.10, train.10.established , test.10.established, rf.established.10 , auc.established.10, 
      
      vars.m.all.20, all.20, train.20 , test.20, rf.all.20 , auc.all.20, data.20years,
-     file="/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/RF_MODELFIT_Results_DAYMET.RDATA")
+     file="RF_MODELFIT_Results_DAYMET.RDATA")
 
 ##### 20 Years Invading: #####
 invading.20 <- data.20years %>% dplyr::filter(WPBR_stat == "Invading",
@@ -286,7 +289,7 @@ save(vars.m.all.5, all.5, train.5 , test.5, rf.all.5 , auc.all.5, data.5years,
      
      vars.m.all.20, all.20, train.20 , test.20, rf.all.20 , auc.all.20, data.20years,
      vars.m.invading.20, invading.20, train.20.invading , test.20.invading, rf.invading.20 , auc.invading.20,
-     file="/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/RF_MODELFIT_Results_DAYMET.RDATA")
+     file="RF_MODELFIT_Results_DAYMET.RDATA")
 
 ##### 20 Years Established: #####
 
@@ -316,19 +319,20 @@ test.20.established$MODEL.c[test.20.established$MODEL < 0.50] <- 0
 
 save(vars.m.all.5, all.5, train.5 , test.5, rf.all.5 , auc.all.5, data.5years,
      vars.m.invading.5, invading.5, train.5.invading , test.5.invading, rf.invading.5 , auc.invading.5,
-     vars.m.established.5, established.5, train.5.established , test.5.established, rf.established.5 , auc.established.5, 
+     vars.m.established.5, established.5, train.5.established , test.5.established, rf.established.5 , auc.established.5,
+     
      vars.m.all.10, all.10, train.10 , test.10, rf.all.10 , auc.all.10, data.10years,
      vars.m.invading.10, invading.10, train.10.invading , test.10.invading, rf.invading.10 , auc.invading.10,
-     vars.m.established.10, established.10, train.10.established , test.10.established, rf.established.10 , auc.established.10, 
+     vars.m.established.10, established.10, train.10.established , test.10.established, rf.established.10 , auc.established.10, rf.established.10 ,
      
      vars.m.all.20, all.20, train.20 , test.20, rf.all.20 , auc.all.20, data.20years,
      vars.m.invading.20, invading.20, train.20.invading , test.20.invading, rf.invading.20 , auc.invading.20,
      vars.m.established.20, established.20, train.20.established , test.20.established, rf.established.20 , auc.established.20, 
-     file="/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/RF_MODELFIT_Results_DAYMET.RDATA")
+     file="RF_MODELFIT_Results_DAYMET.RDATA")
 
 # Load Models:
 rm(list=ls())
 
-load("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/RF_MODELFIT_Results_DAYMET.RDATA")
+load("RF_MODELFIT_Results_DAYMET.RDATA")
 
 #EOF

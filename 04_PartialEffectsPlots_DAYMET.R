@@ -6,9 +6,13 @@ library(ggpubr)
 
 rm(list=ls())
 
+data.dir <- "/Volumes/MaloneLab/Research/RUSTMAPPER"
+figure.dir <- "/Users/sm3466/Dropbox (YSE)/Research/RUSTMapper/FIGURES"
+setwd(data.dir)
+
 # Load the data layers:
 
-load("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/RF_MODELFIT_Results_DAYMET.RDATA")
+load("RF_MODELFIT_Results_DAYMET.RDATA")
 
 conDen.Plot <- function(df){
   
@@ -223,7 +227,7 @@ plots.est.5 <- conDen.Plot.est(df= as.data.frame(established.5))
 plots.est.10 <- conDen.Plot.est(df= as.data.frame(established.10))
 plots.est.20 <- conDen.Plot.est(df= as.data.frame(established.20))
 
-setwd("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/FIGURES")
+setwd(figure.dir)
 
 png("04_ConditionalPlots_Inv_5Y", width = 700, height = 600)
 plots.inv.5

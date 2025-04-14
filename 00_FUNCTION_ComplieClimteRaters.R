@@ -5,7 +5,7 @@ library(AOI)
 
 climate.import.future <- function( pattern){
   # FUTRUE
-  setwd("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Spatial/ClimateChangeProjections")
+  setwd(paste(data.dir,"/ClimateChangeProjections", sep=""))
   
   data.2030 <- rast(list.files(".", pattern=pattern) )
   AOI = sf::st_transform( AOI, crs(data.2030))
@@ -20,7 +20,7 @@ climate.import.future <- function( pattern){
 }
 
 climate.import.normals <- function( pattern){
-  setwd("/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/WPBR/DAYMET/NORMAL")
+  setwd(paste(data.dir,"/DAYMET/NORMAL", sep=""))
   data.current <- terra::rast(list.files(".", pattern=pattern) )
   AOI = sf::st_transform( AOI, crs(data.current))
   terra::time(data.current ) <- seq(2000,2020)
@@ -31,7 +31,7 @@ climate.import.normals <- function( pattern){
 
 climate.import.gridmet <- function( pattern){
   # FUTRUE
-  setwd("/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Spatial/GRIDMET_CURRENT")
+  setwd(paste(data.dir,"/GRIDMET_CURRENT", sep=""))
   data.2030 <- rast(list.files(".", pattern=pattern) )
   AOI = sf::st_transform( AOI, crs(data.2030))
   terra::time(data.2030 ) <- seq(1980,2023)
@@ -40,6 +40,4 @@ climate.import.gridmet <- function( pattern){
   total.data <- data.2030 %>% terra::project("+proj=lcc +lat_0=42.5 +lon_0=-100 +lat_1=25 +lat_2=60 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs")
   
   return(total.data)
-  
-  
 }

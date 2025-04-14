@@ -1,16 +1,26 @@
 #STEP2_Variable Selection:
-
+rm(list=ls())
 library( VSURF)
 library(dplyr)
 library(tidyverse)
 library(parallel)
 # https://www.rdocumentation.org/packages/VSURF/versions/1.1.0/topics/VSURF
 
-load('/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/WPBR_plots_DAYMET.RDATA')
+data.dir <- "/Volumes/MaloneLab/Research/RUSTMAPPER"
+setwd(data.dir)
 
+load('WPBR_plots_DAYMET.RDATA')
+
+# Correct Stream Density:
+
+data.5.years <- data.5years %>% filter( RUST <=1) %>% mutate(StreamDen = streamDen %>% as.numeric)
+data.10.years <- data.10years %>% filter( RUST <=1) %>% mutate(StreamDen = streamDen %>% as.numeric)
+data.20.years <- data.20years %>% filter( RUST <=1) %>% mutate(StreamDen = streamDen %>% as.numeric)
+
+save(data.5years, data.10years , data.20years, file='WPBR_plots_DAYMET.RDATA' )
 
 ###### 5 year model fit ####
-data.5 <- data.5years %>% filter( RUST <=1)
+data.5 <- data.5years %>% filter( RUST <=1) %>% mutate(StreamDen = streamDen %>% as.numeric)
 
 # All data models 
 vars.m.all.5n <- c("RUST", "H_Zone" , "WPBR_stat",
@@ -23,7 +33,7 @@ vars.m.all.5n <- c("RUST", "H_Zone" , "WPBR_stat",
                    "TPI","TRI", "StreamDen")
 
 
-data.5n <- data.5 %>% dplyr::select(vars.m.all.5n) %>% filter(RUST < 2) %>% na.omit()
+data.5n <- data.5 %>% dplyr::select(all_of(vars.m.all.5n)) %>% filter(RUST < 2) %>% na.omit()
 
 data.5n$RUST <- data.5n$RUST %>% as.factor
 
@@ -65,10 +75,10 @@ vars.m.established.5 <-names( established[, c(2, 4:23)]) [m.established.5$varsel
 save(m.all.5n.site, vars.m.all.5, 
      m.invading.5,vars.m.invading.5,
      m.established.5, vars.m.established.5,
-     file = "/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/WPBR_Variable_Selction_5_DAYMET.RData")
+     file = "WPBR_Variable_Selction_5_DAYMET.RData")
 
 ###### 10 year model fit ####
-data.10 <- data.10years %>% filter( RUST <=1)
+data.10 <- data.10years %>% filter( RUST <=1)%>% mutate(StreamDen = streamDen %>% as.numeric)
 
 names(data.10)
 # All data models 
@@ -82,7 +92,7 @@ vars.m.all.10n <- c("RUST", "H_Zone" , "WPBR_stat",
                    "TPI","TRI", "StreamDen")
 
 
-data.10n <- data.10 %>% dplyr::select(vars.m.all.10n) %>% filter(RUST < 2) %>% na.omit()
+data.10n <- data.10 %>% dplyr::select(all_of(vars.m.all.10n)) %>% filter(RUST < 2) %>% na.omit()
 
 data.10n$RUST <- data.10n$RUST %>% as.factor
 
@@ -125,9 +135,9 @@ vars.m.established.10 <-names( established[, c(2, 4:23)]) [m.established.10$vars
 save(m.all.10n.site, vars.m.all.10, 
      m.invading.10,vars.m.invading.10,
      m.established.10, vars.m.established.10,
-     file = "/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/WPBR_Variable_Selction_10_DAYMET.RData")
+     file = "WPBR_Variable_Selction_10_DAYMET.RData")
 ###### 20 year model fit ####
-data.20 <- data.20years %>% filter( RUST <=1)
+data.20 <- data.20years %>% filter( RUST <=1) %>% mutate(StreamDen = streamDen %>% as.numeric)
 
 names(data.20)
 # All data models 
@@ -141,7 +151,7 @@ vars.m.all.20n <- c("RUST", "H_Zone" , "WPBR_stat",
                    "TPI","TRI", "StreamDen")
 
 
-data.20n <- data.20 %>% dplyr::select(vars.m.all.20n) %>% filter(RUST < 2) %>% na.omit()
+data.20n <- data.20 %>% dplyr::select(all_of(vars.m.all.20n)) %>% filter(RUST < 2) %>% na.omit()
 
 data.20n$RUST <- data.20n$RUST %>% as.factor
 
@@ -186,6 +196,6 @@ vars.m.established.20 <-names( established[, c(2, 4:23)]) [m.established.20$vars
 save(m.all.20n.site, vars.m.all.20, 
      m.invading.20,vars.m.invading.20,
      m.established.20, vars.m.established.20,
-     file = "/Users/sm3466/Dropbox (YSE)/Research/WPBR/NewData/Final Scripts/WPBR_Variable_Selction_20_DAYMET.RData")
+     file = "WPBR_Variable_Selction_20_DAYMET.RData")
 # EOF
 
