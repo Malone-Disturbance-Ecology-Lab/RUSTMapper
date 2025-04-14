@@ -11,4 +11,4 @@ White pine blister rust (WPBR) is one of North America's most damaging tree epid
 5. 04 : Model Fit and Sensitivity 
 6. 05 : Model Visualization 
 7. 06 : Data Visualization
-8. 07-08 : Data summaries
+8. 07 : Data summaries
