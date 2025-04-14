@@ -12,5 +12,5 @@ White pine blister rust (WPBR) is one of North America's most damaging tree epid
 7. 06 : Data Visualization
 8. 07 : Data summaries
 
-##Citation: 
+## Citation: 
 Sparkle Malone. (2025). Malone-Disturbance-Ecology-Lab/RUSTMapper: RustMapper: White Pine Blister Rust Risk Across High Elevation Forests in the Western United States (RUSTMapper). Zenodo. https://doi.org/10.5281/zenodo.15212542
