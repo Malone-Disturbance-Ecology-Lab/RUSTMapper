@@ -15,7 +15,6 @@ setwd(data.dir)
 ensemble.est <- rast( paste(data.dir,"/Ensemble_1980-2099_EST.tif", sep=""))
 ensemble.inv <- rast( paste(data.dir,"/Ensemble_1980-2099_INV.tif", sep=""))
 
-
 load( "Final_ShapeFiles.RDATA")
 
 sf.summary <- function (raster, SP){
