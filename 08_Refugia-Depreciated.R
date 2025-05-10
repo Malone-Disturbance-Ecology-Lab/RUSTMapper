@@ -121,4 +121,67 @@ Total.refugia
 figure
 dev.off()
 
+
+# Contour:
+
+ensemble.est <- terra::rast( paste(data.dir,"/Ensemble_1980-2099_EST.tif", sep=""))
+ensemble.inv <- terra::rast( paste(data.dir,"/Ensemble_1980-2099_INV.tif", sep=""))
+
+
+contour.rasters <- function( raster, threshold){
+library(terra)  
+  raster.filter <- raster
+  raster.filter[ raster.filter < threshold] <- NA
+
+  # Year sub
+  new.raster <- rast()
+  
+  # For loop
+  for( i in 1:nlyr( raster.filter )){
+    print(i)
+    r.1 <- raster.filter[[i]]
+    r.1[ r.1 >= threshold] <- time(r.1)
+    
+    new.raster <- c( new.raster, r.1)
+    
+  }
+  
+  min.rast <- min(new.raster, na.rm=T)
+  return(  min.rast )
+}
+
+
+min.rast.inv <- contour.rasters(raster = ensemble.inv , 
+                                threshold = 0.5)
+
+min.rast.est <- contour.rasters(raster = ensemble.est , 
+                                threshold = 0.65)
+
+library(ggplot2)
+library(tidyterra)
+library(AOI)
+
+data.dir <- "/Volumes/MaloneLab/Research/RUSTMAPPER"
+figure.dir <- "/Users/sm3466/Dropbox (YSE)/Research/RUSTMapper/FIGURES"
+setwd(data.dir)
+
+AOI = AOI::aoi_get(state = c("CO", "WA", "OR", "CA", "MT", "ID", "UT", "AZ", "NV", "WY", "NM"))
+AOI <- st_transform( AOI, 4326)
+load( "Final_ShapeFiles.RDATA")
+load(file='WPBR_plots_DAYMET.RDATA')
+
+
+
+ggplot() + geom_sf(data=AOI , fill="white", color="grey", lwd=0.5) +
+  geom_sf(data=wp.s , fill="red")+
+  geom_spatraster_contour_filled(data = min.rast.inv, breaks = seq(1980, 2099, 5))  +
+  theme_minimal()
+
+
+ggplot() + geom_sf(data=AOI , fill="white", color="grey", lwd=0.5) +
+  geom_sf(data=wp , fill="cyan")+
+  geom_spatraster_contour_filled(data = min.rast.est, breaks = seq(1980, 2099, 10))  +
+  theme_minimal()
+
+
 # EOF

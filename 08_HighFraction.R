@@ -95,7 +95,7 @@ Frac.High.inv <- cbind( wp.inv,
                         PIFL.inv ,
                         PILO.inv ,
                         PIAR.inv ,
-                        PIST.inv ) %>% as.data.frame
+                        PIST.inv ) %>% as.data.frame %>% mutate( Year = time(ensemble.inv)) 
 
 Frac.High.est <- c( wp.est,
                     southern.H5.est, 
@@ -119,11 +119,10 @@ Frac.High.est <- c( wp.est,
                     PIFLs.est ,
                     PILOs.est,
                     PIARs.est,
-                    PISTs.est)%>% as.data.frame
+                    PISTs.est)%>% as.data.frame %>% mutate( Year = time(ensemble.est) %>% as.numeric)
+
 
 Frac.High <- cbind(Frac.High.inv, Frac.High.est)
-
-Frac.High$Year <-time(ensemble.est) %>% as.numeric
 
 write.csv( Frac.High,paste(data.dir,'/Frac.High.csv', sep=""))
 
@@ -265,10 +264,141 @@ Elev.risk.EST <-ggplot() + geom_sf(data=AOI, fill="black",  col="black",alpha=0.
 
 
 setwd(figure.dir)
-png("08_HighFraction_FIGURE_ElevRisk.png", width = 600, height = 300)
 
-ggpubr::ggarrange(Elev.risk.INV, Elev.risk.EST, ncol=2, nrow=1, 
-                  labels=c("a", "b"),
+
+Frac.High.est$wp %>% summary
+Frac.High.est %>% summary
+
+Frac.High.inv$southern.H5 %>% mean
+Frac.High.inv$southern.H5 %>% sd
+
+FH.timeseries <-  ggarrange(ggplot() + 
+  geom_point(data=Frac.High.est , aes(x=Year, y = wp)) + 
+  geom_line(data=Frac.High.est , aes(x=Year, y = wp), linetype="dashed") + 
+  geom_point(data = Frac.High.inv, aes(x=Year, y = southern.H5), col="gray") + geom_line(data = Frac.High.inv, aes(x=Year, y = southern.H5), linetype="dashed", col="gray") +
+  theme_bw() + ylim( 0, 100) + ylab("Elevated Risk (%)") + xlab("") +
+  theme(text = element_text(size = 15), 
+        panel.spacing = unit(0.25, "lines"),
+        axis.text.x = element_text(angle = 90), 
+        panel.background = element_rect(fill='transparent')) +
+    annotate('text', label=expression("P(WPBR)"[EST]), col="black", x=1980, y=75, hjust = 0, size=6) +
+    annotate('text', label=expression("P(WPBR)"[Inv]), col="gray", x=1980, y=60, hjust = 0, size=6) , labels="a") 
+
+
+FH.maps <- ggpubr::ggarrange(Elev.risk.INV, Elev.risk.EST, ncol=2, nrow=1, 
+                  labels=c("b", "c"),
                   common.legend = TRUE, legend="top")
+
+
+png("08_HighFraction_FIGURE_ElevRisk.png", width = 600, height = 600)
+
+ggpubr::ggarrange(FH.timeseries,FH.maps, ncol=1, nrow=2)
 dev.off()
 
+
+# Elevatd Risk timeseries by region
+
+
+fh.ts.plot <- function(data, colname) {
+  
+  plot <- ggplot() + 
+    geom_point(data=data , aes(x=Year, y = data[, colname])) + 
+    geom_line(data=data , aes(x=Year, y = data[, colname]), linetype="dashed") + 
+                              theme_bw() + ylim( 0, 100) + ylab("Elevated Risk (%)") + xlab("") + theme(text = element_text(size = 17), 
+                                    panel.spacing = unit(0.25, "lines"),
+                                    axis.text.x = element_text(angle = 90), 
+                                    panel.background = element_rect(fill='transparent'))
+return(plot)
+}
+Frac.High.est %>% names
+p.est.wp <- fh.ts.plot( data = Frac.High.est, colname = 'wp')
+p.est.wp.cce <- fh.ts.plot( data = Frac.High.est, colname = 'wp.cce')
+p.est.wp.gb <- fh.ts.plot( data = Frac.High.est, colname = 'wp.gb')
+p.est.wp.gye <- fh.ts.plot( data = Frac.High.est, colname = 'wp.gye')
+p.est.wp.pnw <- fh.ts.plot( data = Frac.High.est, colname = 'wp.pnw')
+p.est.wp.sr <- fh.ts.plot( data = Frac.High.est, colname = 'wp.sr')
+p.est.wp.ssn <- fh.ts.plot( data = Frac.High.est, colname = 'wp.ssn')
+p.est.wp.sw <- fh.ts.plot( data = Frac.High.est, colname = 'wp.sw')
+
+png("08_HighFraction_FIGURE_ElevRisk_Regions_EST.png", width = 1000, height = 1000)
+ggpubr::ggarrange( 
+  p.est.wp.pnw,
+  p.est.wp.cce,
+  p.est.wp.gye, 
+  p.est.wp.sr , 
+  p.est.wp.gb,
+  p.est.wp.sw,
+  p.est.wp.ssn, ncol=2, nrow=4,labels=c("a", "b", "c", "d", "e", "f", "g"),
+  font.label = list(size = 18, color = "black", face = "bold", family = NULL))
+
+dev.off()
+
+
+p.inv.wp.s <- fh.ts.plot( data = Frac.High.inv, colname = 'southern.H5')
+p.inv.wp.sr <- fh.ts.plot( data = Frac.High.inv, colname = 'wp.sr')
+p.inv.wp.gb <- fh.ts.plot( data = Frac.High.inv, colname = 'wp.gb')
+p.inv.wp.sw <- fh.ts.plot( data = Frac.High.inv, colname = 'wp.sw')
+p.inv.wp.ssn <- fh.ts.plot( data = Frac.High.inv, colname = 'wp.ssn')
+
+
+png("08_HighFraction_FIGURE_ElevRisk_Regions_INV.png", width = 1000, height = 500)
+ggpubr::ggarrange( 
+  p.inv.wp.s,
+  p.inv.wp.gb,
+  p.inv.wp.sw , 
+  p.inv.wp.ssn , 
+  ncol=2, nrow=2,labels=c("a", "b", "c", "d"),
+  font.label = list(size = 18, color = "black", face = "bold", family = NULL))
+
+dev.off()
+
+# Species Plots:
+
+fh.ts.plot.species <- function(data.est, colname.est,
+                       data.inv, colname.inv) {
+  
+  plot <- ggplot() + 
+    geom_point(data=data.est , aes(x=Year, y = data.est[,colname.est])) + 
+    geom_line(data=data.est , aes(x=Year, y = data.est[,colname.est]), linetype="dashed") + 
+    geom_point(data = data.inv, aes(x=Year, y = data.inv[,colname.inv]), col="gray") + geom_line(data = Frac.High.inv, aes(x=Year, y = data.inv[,colname.inv]), linetype="dashed", col="gray") +
+    theme_bw() + ylim( 0, 100) + ylab("Elevated Risk (%)") + xlab("") +
+    theme(text = element_text(size = 15), 
+          panel.spacing = unit(0.25, "lines"),
+          axis.text.x = element_text(angle = 90), 
+          panel.background = element_rect(fill='transparent')) 
+  
+  return(plot)
+}
+
+
+
+p.pial <- fh.ts.plot.species (data.est = Frac.High.est, colname.est="PIAL",
+            data.inv= Frac.High.inv, colname.inv ="PIAL")
+
+p.piba <- fh.ts.plot.species (data.est = Frac.High.est, colname.est="PIBA",
+                              data.inv= Frac.High.inv, colname.inv ="PIBA")
+
+p.pifl2 <- fh.ts.plot.species (data.est = Frac.High.est, colname.est="PIFL",
+                              data.inv= Frac.High.inv, colname.inv ="PIFL")
+
+p.pilo <- fh.ts.plot.species (data.est = Frac.High.est, colname.est="PILO",
+                              data.inv= Frac.High.inv, colname.inv ="PILO")
+
+p.pist <- fh.ts.plot.species (data.est = Frac.High.est, colname.est="PIST",
+                              data.inv= Frac.High.inv, colname.inv ="PIST")
+
+p.piar <- fh.ts.plot.species (data.est = Frac.High.est, colname.est="PIAR",
+                              data.inv= Frac.High.inv, colname.inv ="PIAR")
+
+png("08_HighFraction_FIGURE_ElevRisk_Species.png", width = 1000, height = 1000)
+ggpubr::ggarrange( 
+  p.piba ,
+  p.pial,
+  p.pifl2,
+  p.pilo,
+  p.pist,
+  p.piar,
+  ncol=2, nrow=3,labels=c("a", "b", "c", "d", "e", "f"),
+  font.label = list(size = 18, color = "black", face = "bold", family = NULL))
+
+dev.off()

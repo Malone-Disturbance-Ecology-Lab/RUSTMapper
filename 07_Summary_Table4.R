@@ -186,6 +186,8 @@ sf.summary.FracH <- function (raster, SP){
     return(p50)
   }
   
+
+  
   raster.cropped <- terra::crop(raster, SP) %>% terra::mask( SP)
   df <-as.data.frame(raster.cropped) %>% na.omit()
   Frac.High <- P.50( df[,1]) %>% round(2)
@@ -274,3 +276,12 @@ return(table.out )
 
 FH.Table.inv <- FH.Table1(raster = ensemble.inv)
 FH.Table.est <- FH.Table1(raster = ensemble.est)
+
+
+# Regional Summaries Figures:
+
+Table.Current <- read.csv("/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/WPBR/NewData/Final Scripts/FIGURES/08_Model_Current-Summary_Table.csv")
+
+
+Table.Current %>% ggplot( aes( x=id, y = mean.x)) + geom_bar(stat = "identity")
+

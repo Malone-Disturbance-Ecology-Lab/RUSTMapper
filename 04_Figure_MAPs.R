@@ -22,7 +22,7 @@ load( "Final_ShapeFiles.RDATA")
 load(file='WPBR_plots_DAYMET.RDATA')
 
 
-# Figure 1  Map: ####
+# Regional Map
 regions.plot <- ggplot( ) +   geom_sf(data=AOI , fill="white", color="black", lwd=0.5) +
   theme(panel.background = element_rect(fill='transparent'), 
         axis.text.x = element_text(angle = 90),
@@ -36,6 +36,7 @@ regions.plot <- ggplot( ) +   geom_sf(data=AOI , fill="white", color="black", lw
   geom_sf(data=wp.sw, fill="magenta", alpha = 0.5, color= "magenta") +
   xlab("") + ylab("")
 
+# Species range Map:
 Species.plot <- ggplot( ) + geom_sf(data=AOI, fill="white", color="black", lwd=0.5) +
   geom_sf(data=PIAL, fill="cyan",color=NA, alpha = 0.5) + 
   geom_sf(data=PIBA, fill="cyan4",color=NA, alpha = 1) + 
@@ -48,6 +49,8 @@ Species.plot <- ggplot( ) + geom_sf(data=AOI, fill="white", color="black", lwd=0
         axis.text.x = element_text(angle = 90),
         text = element_text(size = 20)) 
 
+# Plot Data Map
+
 plots.plot <- ggplot( ) + geom_sf(data=AOI, fill="transparent", colour='black', lwd=0.5) +
   geom_sf(data=wpbr$geometry[wpbr$WPBR_stat == 'Established'], color='black', size=0.5) +
   geom_sf(data=wpbr$geometry[wpbr$WPBR_stat == 'Invading'], color='gray', size=0.5) + xlab("") + ylab("")+
@@ -56,11 +59,29 @@ plots.plot <- ggplot( ) + geom_sf(data=AOI, fill="transparent", colour='black', 
         text = element_text(size = 20))
 
 library(ggpubr)
+
 setwd(figure.dir)
 png("04_Figure1_Map.png", width =700, height = 300)
 ggarrange(regions.plot, plots.plot, Species.plot,
           nrow= 1, ncol= 3, labels =c("a", "b", "c") ,vjust=1)
 dev.off()
+
+png("04_Regions_Map.png", width =300, height = 300)
+ggarrange(regions.plot,
+          nrow= 1, ncol= 1 ,vjust=1)
+dev.off()
+
+png("04_Species_Map.png", width =300, height = 300)
+ggarrange(Species.plot,
+          nrow= 1, ncol= 1 ,vjust=1)
+dev.off()
+
+png("04_DataPoints_Map.png", width =300, height = 300)
+ggarrange(plots.plot,
+          nrow= 1, ncol= 1 ,vjust=1)
+dev.off()
+
+save( Species.plot,regions.plot, file=paste(data.dir,"maps.Rdata", sep="/"))
 
 # Supplemental Figure for the ranges of projection:
 invasion.regions <- st_transform(invasion.regions, crs(wp)) 
