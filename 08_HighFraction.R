@@ -340,16 +340,15 @@ p.inv.wp.gb <- fh.ts.plot( data = Frac.High.inv, colname = 'wp.gb')
 p.inv.wp.sw <- fh.ts.plot( data = Frac.High.inv, colname = 'wp.sw')
 p.inv.wp.ssn <- fh.ts.plot( data = Frac.High.inv, colname = 'wp.ssn')
 
-
 png("08_HighFraction_FIGURE_ElevRisk_Regions_INV.png", width = 1000, height = 500)
+
 ggpubr::ggarrange( 
-  p.inv.wp.s,
+  p.inv.wp.sr,
   p.inv.wp.gb,
   p.inv.wp.sw , 
   p.inv.wp.ssn , 
   ncol=2, nrow=2,labels=c("a", "b", "c", "d"),
   font.label = list(size = 18, color = "black", face = "bold", family = NULL))
-
 dev.off()
 
 # Species Plots:
