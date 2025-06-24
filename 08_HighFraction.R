@@ -17,7 +17,6 @@ library("cowplot")
 library(ggpubr)
 
 # Import data: 
-# Import data: 
 data.dir <- "/Volumes/MaloneLab/Research/RUSTMAPPER"
 figure.dir <- "/Users/sm3466/Dropbox (YSE)/Research/RUSTMapper/FIGURES"
 
@@ -27,8 +26,7 @@ ensemble.est <- rast( paste(data.dir,"/Ensemble_1980-2099_EST.tif", sep=""))
 ensemble.inv <- rast( paste(data.dir,"/Ensemble_1980-2099_INV.tif", sep=""))
 load( "Final_ShapeFiles.RDATA")
 
-
-
+# Functions: 
 frac <- function( col){
   tot = length(col)
   high = length(col[col > 0.50])
@@ -275,14 +273,14 @@ Frac.High.inv$southern.H5 %>% sd
 FH.timeseries <-  ggarrange(ggplot() + 
   geom_point(data=Frac.High.est , aes(x=Year, y = wp)) + 
   geom_line(data=Frac.High.est , aes(x=Year, y = wp), linetype="dashed") + 
-  geom_point(data = Frac.High.inv, aes(x=Year, y = southern.H5), col="gray") + geom_line(data = Frac.High.inv, aes(x=Year, y = southern.H5), linetype="dashed", col="gray") +
+  geom_point(data = Frac.High.inv, aes(x=Year, y = southern.H5), col="gray45") + geom_line(data = Frac.High.inv, aes(x=Year, y = southern.H5), linetype="dashed", col="gray45") +
   theme_bw() + ylim( 0, 100) + ylab("Elevated Risk (%)") + xlab("") +
   theme(text = element_text(size = 15), 
         panel.spacing = unit(0.25, "lines"),
         axis.text.x = element_text(angle = 90), 
         panel.background = element_rect(fill='transparent')) +
     annotate('text', label=expression("P(WPBR)"[EST]), col="black", x=1980, y=75, hjust = 0, size=6) +
-    annotate('text', label=expression("P(WPBR)"[Inv]), col="gray", x=1980, y=60, hjust = 0, size=6) , labels="a") 
+    annotate('text', label=expression("P(WPBR)"[Inv]), col="gray45", x=1980, y=60, hjust = 0, size=6) , labels="a") 
 
 
 FH.maps <- ggpubr::ggarrange(Elev.risk.INV, Elev.risk.EST, ncol=2, nrow=1, 
@@ -297,7 +295,6 @@ dev.off()
 
 
 # Elevatd Risk timeseries by region
-
 
 fh.ts.plot <- function(data, colname) {
   
@@ -359,7 +356,7 @@ fh.ts.plot.species <- function(data.est, colname.est,
   plot <- ggplot() + 
     geom_point(data=data.est , aes(x=Year, y = data.est[,colname.est])) + 
     geom_line(data=data.est , aes(x=Year, y = data.est[,colname.est]), linetype="dashed") + 
-    geom_point(data = data.inv, aes(x=Year, y = data.inv[,colname.inv]), col="gray") + geom_line(data = Frac.High.inv, aes(x=Year, y = data.inv[,colname.inv]), linetype="dashed", col="gray") +
+    geom_point(data = data.inv, aes(x=Year, y = data.inv[,colname.inv]), col="gray45") + geom_line(data = Frac.High.inv, aes(x=Year, y = data.inv[,colname.inv]), linetype="dashed", col="gray45") +
     theme_bw() + ylim( 0, 100) + ylab("Elevated Risk (%)") + xlab("") +
     theme(text = element_text(size = 15), 
           panel.spacing = unit(0.25, "lines"),

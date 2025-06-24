@@ -111,9 +111,9 @@ refugia.est <- ggplot() + geom_sf(data=AOI , fill="white", color="gray", lwd=0.2
   guides(fill = guide_legend(title = "")) +theme(text = element_text(size = 20))
  
 setwd(figure.dir)
-png("08_REFUGIA_FIGURE.png", width = 600, height = 500)
+png("08_REFUGIA_FIGURE.png", width = 600, height = 1000)
 ggpubr::ggarrange(refugia.inv, refugia.est, 
-          labels=c("a", "b"), ncol=2, nrow=1, 
+          labels=c("a", "b"), ncol=1, nrow=2, 
           common.legend = T,  font.label = list(size = 25, color = "black"))
 
 dev.off()
@@ -140,13 +140,13 @@ refugia <- function( model.layers, years.thres, year){
 
 
 refugia.est.2050 <- refugia(model.layers = ensemble.est, 
-                            years.thres = min.rast.est, year=2050 ) %>% aggregate( fact=10,fun=max, expand=TRUE, na.rm=TRUE)
+                            years.thres = min.rast.est, year=2050 ) %>% aggregate( fact=5,fun=max, expand=TRUE, na.rm=TRUE)
 
 refugia.est.2075 <- refugia(model.layers = ensemble.est, 
-                            years.thres = min.rast.est, year=2075 ) %>% aggregate( fact=10,fun=max, expand=TRUE, na.rm=TRUE)
+                            years.thres = min.rast.est, year=2075 ) %>% aggregate( fact=5,fun=max, expand=TRUE, na.rm=TRUE)
 
 refugia.est.2080 <- refugia(model.layers = ensemble.est, 
-                            years.thres = min.rast.est, year=2080 ) %>% aggregate( fact=10,fun=max, expand=TRUE, na.rm=TRUE)
+                            years.thres = min.rast.est, year=2080 ) %>% aggregate( fact=5,fun=max, expand=TRUE, na.rm=TRUE)
 
 length( refugia.est.2080[ refugia.est.2050 ==1])
 length( refugia.est.2080[ refugia.est.2075 ==1])
@@ -158,13 +158,13 @@ refugia.est.2080 %>% sum( na.rm=T) %>% plot(add=T, col="red")
 ensemble.inv.mean <- ensemble.inv %>% mean(na.rm=T)
 
 refugia.inv.2050 <- refugia(model.layers = ensemble.inv, 
-                            years.thres = min.rast.inv, year=2050 ) %>% aggregate( fact=10,fun=max, expand=TRUE, na.rm=TRUE)
+                            years.thres = min.rast.inv, year=2050 ) %>% aggregate( fact=5,fun=max, expand=TRUE, na.rm=TRUE)
 
 refugia.inv.2075 <- refugia(model.layers = ensemble.inv, 
-                            years.thres = min.rast.inv, year=2075 ) %>% aggregate( fact=10,fun=max, expand=TRUE, na.rm=TRUE)
+                            years.thres = min.rast.inv, year=2075 ) %>% aggregate( fact=5,fun=max, expand=TRUE, na.rm=TRUE)
 
 refugia.inv.2080 <- refugia(model.layers = ensemble.inv, 
-                            years.thres = min.rast.inv, year=2080 ) %>% aggregate( fact=10,fun=max, expand=TRUE, na.rm=TRUE)
+                            years.thres = min.rast.inv, year=2080 ) %>% aggregate( fact=5,fun=max, expand=TRUE, na.rm=TRUE)
 
 length( refugia.inv.2080[ refugia.inv.2050 ==1])
 length( refugia.inv.2080[ refugia.inv.2075 ==1])
@@ -177,48 +177,42 @@ p.r.est.2050 <- ggplot() + geom_sf(data=AOI , fill="white", color="gray", lwd=0.
   geom_sf(data=wp , fill="grey", col="grey") +
   geom_spatraster(data = refugia.est.2050 %>% as.factor, show.legend = F) +
   scale_fill_manual(values="red", na.value = "transparent",
-                    labels = c("Refugia", "")) +theme_minimal() +
-  guides(fill = guide_legend(title = "")) +theme(text = element_text(size = 20))
+                    labels = c("Refugia", ""))
   
 p.r.est.2075 <- ggplot() + geom_sf(data=AOI , fill="white", color="gray", lwd=0.25) +
   geom_sf(data=wp , fill="grey", col="grey") +
   geom_spatraster(data = refugia.est.2075 %>% as.factor, show.legend = F) +  
   scale_fill_manual(values="red", na.value = "transparent",
-                    labels = c("Refugia", ""))+theme_minimal() +
-  guides(fill = guide_legend(title = "")) +theme(text = element_text(size = 20))
+                    labels = c("Refugia", ""))
 
 p.r.est.2080 <- ggplot() + geom_sf(data=AOI , fill="white", color="gray", lwd=0.25) +
   geom_sf(data=wp , fill="grey", col="grey") +
   geom_spatraster(data = refugia.est.2080 %>% as.factor, show.legend = F) +
   scale_fill_manual(values="red", na.value = "transparent",
-                    labels = c("Refugia", ""))+theme_minimal() +
-  guides(fill = guide_legend(title = "")) +theme(text = element_text(size = 20))
+                    labels = c("Refugia", ""))
 
 p.r.inv.2050 <- ggplot() + geom_sf(data=AOI , fill="white", color="gray", lwd=0.25) +
   geom_sf(data=wp.s , fill="grey", col="grey") +
   geom_spatraster(data = refugia.inv.2050 %>% as.factor, show.legend = F) +
   scale_fill_manual(values="red", na.value = "transparent",
-                    labels = c("Refugia", ""))+theme_minimal() +
-  guides(fill = guide_legend(title = "")) +theme(text = element_text(size = 20))
+                    labels = c("Refugia", ""))
 
 p.r.inv.2075 <- ggplot() + geom_sf(data=AOI , fill="white", color="gray", lwd=0.25) +
   geom_sf(data=wp.s , fill="grey", col="grey") +
   geom_spatraster(data = refugia.inv.2075 %>% as.factor, show.legend = F) +
   scale_fill_manual(values="red", na.value = "transparent",
-                    labels = c("Refugia", ""))+theme_minimal() +
-  guides(fill = guide_legend(title = "")) +theme(text = element_text(size = 20))
+                    labels = c("Refugia", ""))
 
 p.r.inv.2080 <- ggplot() + geom_sf(data=AOI , fill="white", color="gray", lwd=0.25) +
   geom_sf(data=wp.s , fill="grey", col="grey") +
   geom_spatraster(data = refugia.inv.2080 %>% as.factor, show.legend = F) +
   scale_fill_manual(values="red", na.value = "transparent",
-                    labels = c("Refugia", ""))+theme_minimal() +
-  guides(fill = guide_legend(title = "")) +theme(text = element_text(size = 20))
+                    labels = c("Refugia", ""))
   
 
 contours <-ggpubr::ggarrange(refugia.inv, refugia.est, 
-          labels=c("a", "b"), ncol=1, nrow=2, 
-          common.legend = T,font.label = list(size = 25, color = "black")) 
+          labels=c("a", "b"), ncol=2, nrow=1, 
+          common.legend = T,font.label = list(size = 25, color = "black"))
 
 
 refugia.risk <- ggpubr::ggarrange(p.r.inv.2050, p.r.est.2050,
@@ -231,8 +225,7 @@ refugia.risk <- ggpubr::ggarrange(p.r.inv.2050, p.r.est.2050,
           common.legend = T)
 
 
-png("08_REFUGIA_FIGUREB.png", width = 1200, height = 1000)
-
-ggpubr::ggarrange(contours, refugia.risk, nrow=1, ncol=2)
+png("08_REFUGIA_FIGUREB.png", width = 600, height = 1000)
+refugia.risk
 dev.off()
 
