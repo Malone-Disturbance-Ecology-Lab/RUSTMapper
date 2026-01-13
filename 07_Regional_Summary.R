@@ -20,13 +20,10 @@ setwd(data.dir)
 
 # Import maps made in 04_Figure_MAPS
 load( file=paste(data.dir,"maps.Rdata", sep="/"))
-
-
-ensemble.est <- rast(  paste(data.dir,"/Ensemble_1980-2099_EST.tif", sep=""))
-ensemble.inv <- rast(paste(data.dir,"/Ensemble_1980-2099_INV.tif",sep=""))
-
 load("Final_ShapeFiles.RDATA")
 load('CCTRENDS_Regions_Species.RDATA')
+ensemble.est <- rast( paste(data.dir,"/Ensemble_1980-2099_EST.tif", sep=""))
+ensemble.inv <- rast( paste(data.dir,"/Ensemble_1980-2099_INV.tif", sep=""))
 
 # Future summary:
 ensemble.inv[[45:114]] %>% range
@@ -35,6 +32,7 @@ ensemble.inv[[45:114]] %>% range
 
 # Min increase:
 1-(ensemble.inv[[1:44]] %>% terra::app( fun = min) %>% global(na.rm=T, mean)/ensemble.inv[[45:114]] %>% terra::app( fun = min) %>% global(na.rm=T, mean) ) 
+
 
 ensemble.est[[1:44]] %>% terra::app( fun = mean) %>% global(na.rm=T)
 ensemble.est[[45:114]] %>% terra::app( fun = mean) %>% global(na.rm=T)
@@ -53,25 +51,18 @@ ensemble.est[[45:114]] %>% range()
 
 # 
 ensemble.est.future.df <- ensemble.est[[45:114]] %>% mean( na.rm = T) %>% as.data.frame() %>% na.omit()
-
 ensemble.inv.future.df <- ensemble.inv[[45:114]] %>% mean( na.rm = T) %>% as.data.frame() %>% na.omit()
 
 length(ensemble.est.future.df$mean[ensemble.est.future.df$mean>0.5 ])/ length(ensemble.est.future.df$mean)*100
-
 length(ensemble.inv.future.df$mean[ensemble.inv.future.df$mean>0.5 ])/ length(ensemble.inv.future.df$mean)*100
-
-ensemble.inv %>% range
-
 
 ensemble.inv.future <- rast()
 ensemble.inv.future$Current <-ensemble.inv[[1:44]] %>% mean( na.rm = T) 
 ensemble.inv.future$Future <-ensemble.inv[[45:114]] %>% mean( na.rm = T) 
-
 ensemble.inv.future.df2 <- ensemble.inv.future %>% as.data.frame %>% na.omit()
-
 lm( ensemble.inv.future.df2$Future ~ ensemble.inv.future.df2$Current) %>% summary
 
-# Create Decadal Layers:
+# Create Decade Layers:
 
 #Create decadal summaries
 idx <-c(1,1,1,1,1,1,1,1,1,1,
@@ -97,6 +88,7 @@ names(ensemble.inv.decade )
 
 
 setwd(figure.dir)
+AOI <- AOI %>% st_transform(crs(ensemble.est))
 
 plot.inv.cc <- ggplot() + geom_sf(data=AOI, fill="black") + 
   geom_spatraster(data = ensemble.inv.decade[[2:9]], na.rm = TRUE) + facet_wrap(~lyr, ncol = 4, nrow=2, labeller = as_labeller(labels)) +
@@ -116,17 +108,17 @@ plot.est.cc <- ggplot() + geom_sf(data=AOI, fill="black") +
 
 
 # Timeseries for whole plots:
-cc.trends.regional$wp.est
 
-timeseries.inv <- cc.trends.regional %>% ggplot() + geom_point(aes( x=year , y = sr.inv)) + theme_bw() + ylim( 0,1) + geom_smooth(aes( x= year, y= sr.inv), col="darkgray", method='loess', linetype = "dashed", size = 0.5)+ theme_bw() + ylim( 0.25,0.6) + ylab(expression("P(WPBR)"[INV])) + xlab("") + theme(text = element_text(size = 25), panel.spacing = unit(0.25, "lines"),
+timeseries.inv <- cc.trends.regional %>% ggplot() + geom_point(aes( x=year , y = sr.inv)) + theme_bw() + ylim( 0,1) + geom_smooth(aes( x= year, y= sr.inv), col="darkgray", method='loess', linetype = "dashed", linewidth = 0.5)+ theme_bw() + ylim( 0.25,0.6) + ylab(expression("P(WPBR)"[INV])) + xlab("") + theme(text = element_text(size = 25), panel.spacing = unit(0.25, "lines"),
                axis.text.x = element_text(angle = 90),panel.background = element_rect(fill='transparent'))
 
 
-timeseries.est <- cc.trends.regional %>% ggplot() + geom_point(aes( x=year , y = wp.est)) + geom_smooth(aes( x= year, y= wp.est), col="black", method='loess', linetype = "dashed", size = 0.5)+ theme_bw() + ylim( 0.5,0.7)+ ylab(expression("P(WPBR)"[EST])) + xlab("") +
+timeseries.est <- cc.trends.regional %>% ggplot() + geom_point(aes( x=year , y = wp.est)) + geom_smooth(aes( x= year, y= wp.est), col="black", method='loess', linetype = "dashed", linewidth = 0.5)+ theme_bw() + ylim( 0.5,0.7)+ ylab(expression("P(WPBR)"[EST])) + xlab("") +
   theme(text = element_text(size = 25), panel.spacing = unit(0.25, "lines"),
         axis.text.x = element_text(angle = 90),panel.background = element_rect(fill='transparent'))
 
 
+setwd(figure.dir)
 png("07_CCplot_Invades_CCProjections2020-2090_timeseries.png", width = 1000, height = 300)
 
 ggarrange(timeseries.inv, labels="a",  font.label = list(size = 25))
@@ -146,7 +138,7 @@ plot.inv.cc
 
 dev.off()
 
-png("07_CCplot_Establishing_CCProjections2020-2090.png", width = 1000, height = 600)
+png("07_CCplot_Est_CCProjections2020-2090.png", width = 1000, height = 600)
 plot.est.cc
 dev.off()
 
@@ -164,8 +156,6 @@ Trends.regions.cc.inv.p <- ggplot(data= cc.trends.regional) +
 #annotate('text', label="Southern Sierra Nevada", col="darkblue", x=2000, y=0.3, hjust = 0, size=5)+ 
 #annotate('text', label="Great Basin", col="darkgreen", x=2000, y=0.28, hjust = 0, size=5)+
 #annotate('text', label="Southwest", col="magenta", x=2000, y=0.26, hjust = 0, size=5)
-
-
 
 
 Trends.regions.cc.est.p <- ggplot(data=cc.trends.regional ) + 
@@ -216,18 +206,12 @@ Trends.species.cc.est.p <- ggplot( data=cc.trends.species) +
 #annotate('text', label="PIAR", col="red", x=2070, y=0.40, hjust = 0, size=6)+
   theme_bw() + theme(text = element_text(size = 20))
 
-
-
-png("07_CCPLOTS_Trends_Inv_Est.png", width = 1200, height =600)
-ggarrange( Species.plot,  Trends.species.cc.inv.p,Trends.species.cc.est.p,
-           regions.plot,Trends.regions.cc.inv.p,Trends.regions.cc.est.p,
-          ncol=3, nrow=2, labels=c("a", "b", "c", "d", "e", "f"),  font.label = list(size = 25))  
-dev.off()
-
-png("07_CCPLOTS_Trends_Inv_Est_Long.png", width = 900, height =950)
+setwd(figure.dir)
+ggsave(filename="07_CCPLOTS_Trends_Inv_Est_Long.png", width = 10, height =9.5, plot=
 ggarrange( regions.plot, Species.plot, 
            Trends.regions.cc.inv.p,Trends.species.cc.inv.p,
            Trends.regions.cc.est.p,Trends.species.cc.est.p,
            ncol=2, nrow=3, labels=c("a", "d", "b", "e","c","f"),
-           font.label = list(size = 25))  
-dev.off()
+           font.label = list(size = 25)), dpi=300)  
+
+

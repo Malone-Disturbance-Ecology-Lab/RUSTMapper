@@ -5,5 +5,6 @@
 RustMapper.Rproj
 Data
 FIGURES
+FIGURES_old
 04_DAYMETvs.GRIDMET.R
 ExportData.R

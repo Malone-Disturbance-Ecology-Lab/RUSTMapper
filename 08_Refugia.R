@@ -51,7 +51,6 @@ library(terra)
   return(  min.rast )
 }
 
-
 min.rast.inv <- contour.rasters(raster = ensemble.inv , 
                                 threshold = 0.5)
 
@@ -67,10 +66,12 @@ figure.dir <- "/Users/sm3466/Dropbox (YSE)/Research/RUSTMapper/FIGURES"
 setwd(data.dir)
 
 AOI = AOI::aoi_get(state = c("CO", "WA", "OR", "CA", "MT", "ID", "UT", "AZ", "NV", "WY", "NM"))
-AOI <- st_transform( AOI, 4326)
+
+
 load( "Final_ShapeFiles.RDATA")
 load(file='WPBR_plots_DAYMET.RDATA')
 
+AOI <- st_transform( AOI, crs(min.rast.est ))
 cols <- c("darkblue","blue",  "magenta","goldenrod", "lightblue4", 
           "yellow", "cyan4", "deeppink","magenta4","sandybrown","springgreen", "green")
 
@@ -109,14 +110,15 @@ refugia.est <- ggplot() + geom_sf(data=AOI , fill="white", color="gray", lwd=0.2
                                               "2081 - 2090")) +
   theme_minimal() +
   guides(fill = guide_legend(title = "")) +theme(text = element_text(size = 20))
- 
-setwd(figure.dir)
-png("08_REFUGIA_FIGURE.png", width = 600, height = 1000)
-ggpubr::ggarrange(refugia.inv, refugia.est, 
-          labels=c("a", "b"), ncol=1, nrow=2, 
-          common.legend = T,  font.label = list(size = 25, color = "black"))
 
-dev.off()
+library(ggpubr)
+
+Final.refugia <- ggarrange( refugia.inv, refugia.est, common.legend = T, ncol=2, labels=c("a", "b"))
+
+setwd(figure.dir)
+ggsave(filename="08_REFUGIA_FIGUREA.png", plot=Final.refugia,  width = 8, height = 6, dpi = 300)
+
+
 
 
 # Refugia
@@ -225,6 +227,8 @@ refugia.risk <- ggpubr::ggarrange(p.r.inv.2050, p.r.est.2050,
           common.legend = T)
 
 
+
+setwd(figure.dir)
 png("08_REFUGIA_FIGUREB.png", width = 600, height = 1000)
 refugia.risk
 dev.off()

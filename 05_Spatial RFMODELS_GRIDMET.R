@@ -3,7 +3,6 @@
 
 rm(list=ls())
 
-
 library(dplyr)
 library(sf)
 library(AOI)
@@ -197,7 +196,7 @@ files.inv.sd <- list.files(path=paste(data.dir,"/Current_RF_Projections/SD",sep=
   
   writeRaster(ensemble.est, paste(data.dir,"/Ensemble_1980-2099_EST.tif", sep=""), overwrite=TRUE)
   writeRaster(ensemble.inv, paste(data.dir,"/Ensemble_1980-2099_INV.tif",sep=""), overwrite=TRUE)
-  
+ 
   writeRaster(ensemble.est.sd, paste(data.dir,"/Ensemble_SD_1980-2099_EST.tif", sep=""), overwrite=TRUE)
   writeRaster(ensemble.inv.sd, paste(data.dir,"/Ensemble_SD_1980-2099_INV.tif",sep=""), overwrite=TRUE)
-  
+ 

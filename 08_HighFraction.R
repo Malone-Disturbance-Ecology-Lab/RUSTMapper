@@ -24,6 +24,7 @@ setwd(data.dir)
 
 ensemble.est <- rast( paste(data.dir,"/Ensemble_1980-2099_EST.tif", sep=""))
 ensemble.inv <- rast( paste(data.dir,"/Ensemble_1980-2099_INV.tif", sep=""))
+
 load( "Final_ShapeFiles.RDATA")
 
 # Functions: 
@@ -48,7 +49,6 @@ wp.gb.inv <- frac.df( sf = wp.gb, raster = ensemble.inv) %>% rename( wp.gb=V1)
 wp.sr.inv <- frac.df( sf = wp.sr, raster = ensemble.inv) %>% rename( wp.sr=V1)
 wp.ssn.inv <- frac.df( sf = wp.ssn, raster = ensemble.inv) %>% rename( wp.ssn=V1)
 wp.sw.inv <- frac.df( sf = wp.sw, raster = ensemble.inv) %>% rename( wp.sw=V1)
-
 PIBA.inv <- frac.df( sf = PIBA, raster = ensemble.inv) %>% rename( PIBA=V1)
 PIAL.inv <- frac.df( sf = PIAL, raster = ensemble.inv) %>% rename( PIAL=V1)
 PIFL.inv <- frac.df( sf = PIFL, raster = ensemble.inv) %>% rename( PIFL=V1)
@@ -64,7 +64,6 @@ wp.pnw.est <- frac.df( sf = wp.pnw, raster = ensemble.est) %>% rename( wp.pnw=V1
 wp.sr.est <- frac.df( sf = wp.sr, raster = ensemble.est) %>% rename( wp.sr=V1)
 wp.ssn.est <- frac.df( sf = wp.ssn, raster = ensemble.est) %>% rename( wp.ssn=V1)
 wp.sw.est <- frac.df( sf = wp.sw, raster = ensemble.est) %>% rename( wp.sw=V1)
-
 PIBA.est <- frac.df( sf = PIBA, raster = ensemble.est) %>% rename( PIBA=V1)
 PIAL.est <- frac.df( sf = PIAL, raster = ensemble.est) %>% rename( PIAL=V1)
 PIFL.est <- frac.df( sf = PIFL, raster = ensemble.est) %>% rename( PIFL=V1)
@@ -122,8 +121,7 @@ Frac.High.est <- c( wp.est,
 
 Frac.High <- cbind(Frac.High.inv, Frac.High.est)
 
-write.csv( Frac.High,paste(data.dir,'/Frac.High.csv', sep=""))
-
+write.csv( Frac.High ,paste(data.dir,'/Frac.High.csv', sep=""))
 # High Frac Tables:
 
 regional.table <- function(df ){
@@ -146,6 +144,7 @@ FH.current_table.inv <- regional.table(df=Frac.High.inv[1:44, ]) %>% rename( Min
                                                                              Maximum.inv = Maximum,
                                                                              Mean.inv = Mean, SD.inv = SD)
 
+
 FH.current_table.est <- regional.table(df=Frac.High.est[1:44,]) %>% rename( Minimum.est = Minimum,
                                                                             Maximum.est = Maximum,
                                                                             Mean.est = Mean)
@@ -157,11 +156,13 @@ FH.future_table.inv <- regional.table(df=Frac.High.inv[45:114, ]) %>% rename( Mi
                                                                               Maximum.inv = Maximum,
                                                                               Mean.inv = Mean, SD.inv = SD)
 
+
 FH.future_table.est <- regional.table(df=Frac.High.est[45:114, ]) %>% rename( Minimum.est = Minimum,
                                                                               Maximum.est = Maximum,
                                                                               Mean.est = Mean)
 
 FH.table.future <- FH.future_table.inv %>% dplyr::full_join(FH.future_table.est, by='Region')
+
 
 # Order:
 FH.table.future$Order[FH.table.future$Region == 'wp']<- 1
@@ -211,15 +212,10 @@ FH.table.current$Order[FH.table.current$Region == 'PIAR']<- 21
 FH.table.future <- arrange(FH.table.future, Order)
 FH.table.current <- arrange(FH.table.current, Order)
 
-
 write.csv(FH.table.current,paste(data.dir,'/08_FH.table-current.csv' , sep="")  )
 write.csv(FH.table.future, paste(data.dir,'/08_FH.table-future.csv' , sep="") )
 
 # Percentage of H5 with FH 2030 - 2099
-
-Frac.High.inv$southern.H5[45:114] %>% mean
-Frac.High.inv$southern.H5[45:114] %>% min
-Frac.High.inv$southern.H5[45:114] %>% max
 
 # ELEVATED RISK: ####
 
@@ -228,6 +224,9 @@ Elev.risk.inv[ensemble.inv < 0.5] <- 0
 Elev.risk.inv[ensemble.inv >= 0.5] <- 1
 
 Elev.risk.inv.total <- Elev.risk.inv %>% sum()
+
+AOI = AOI::aoi_get(state = c("CO", "WA", "OR", "CA", "MT", "ID", "UT", "AZ", "NV", "WY", "NM")) %>% st_transform(crs(ensemble.inv)) %>% st_as_sf
+
 
 Elev.risk.INV <- ggplot() + geom_sf(data=AOI, fill="black",  col="black",alpha=0.75) + 
   geom_spatraster( data=Elev.risk.inv.total, aes(fill = sum)) + 
@@ -247,11 +246,8 @@ Elev.risk.est[ensemble.est >= 0.5] <- 1
 
 Elev.risk.est.total <- sum(Elev.risk.est, na.rm=T)
 
-Elev.risk.inv.total %>% plot
-Elev.risk.inv.total <- sum(Elev.risk.inv, na.rm=T)
-Elev.risk.inv.total %>% plot
-
-Elev.risk.EST <-ggplot() + geom_sf(data=AOI, fill="black",  col="black",alpha=0.75) + geom_spatraster( data=Elev.risk.est.total, aes(fill = sum)) + scale_fill_gradient2(
+Elev.risk.EST <- ggplot() + geom_sf(data=AOI, fill="black",  col="black",alpha=0.75) + 
+  geom_spatraster( data=Elev.risk.est.total, aes(fill = sum)) + scale_fill_gradient2(
   low = "yellow", 
   mid = "cyan", 
   high = "magenta", 
@@ -263,7 +259,6 @@ Elev.risk.EST <-ggplot() + geom_sf(data=AOI, fill="black",  col="black",alpha=0.
 
 setwd(figure.dir)
 
-
 Frac.High.est$wp %>% summary
 Frac.High.est %>% summary
 
@@ -272,26 +267,26 @@ Frac.High.inv$southern.H5 %>% sd
 
 FH.timeseries <-  ggarrange(ggplot() + 
   geom_point(data=Frac.High.est , aes(x=Year, y = wp)) + 
-  geom_line(data=Frac.High.est , aes(x=Year, y = wp), linetype="dashed") + 
-  geom_point(data = Frac.High.inv, aes(x=Year, y = southern.H5), col="gray45") + geom_line(data = Frac.High.inv, aes(x=Year, y = southern.H5), linetype="dashed", col="gray45") +
+  geom_line(data= Frac.High.est , aes(x=Year, y = wp), linetype="dashed") + 
+  geom_point(data = Frac.High.inv, aes(x=Year, y = southern.H5), col="gray45") + 
+    geom_line(data = Frac.High.inv, aes(x=Year, y = southern.H5), linetype="dashed", col="gray45") +
   theme_bw() + ylim( 0, 100) + ylab("Elevated Risk (%)") + xlab("") +
   theme(text = element_text(size = 15), 
         panel.spacing = unit(0.25, "lines"),
         axis.text.x = element_text(angle = 90), 
         panel.background = element_rect(fill='transparent')) +
     annotate('text', label=expression("P(WPBR)"[EST]), col="black", x=1980, y=75, hjust = 0, size=6) +
-    annotate('text', label=expression("P(WPBR)"[Inv]), col="gray45", x=1980, y=60, hjust = 0, size=6) , labels="a") 
-
+    annotate('text', label=expression("P(WPBR)"[INV]), col="gray45", x=1980, y=60, hjust = 0, size=6) , labels="a") 
 
 FH.maps <- ggpubr::ggarrange(Elev.risk.INV, Elev.risk.EST, ncol=2, nrow=1, 
                   labels=c("b", "c"),
                   common.legend = TRUE, legend="top")
 
+setwd(figure.dir)
+ggsave(filename="08_HighFraction_FIGURE_ElevRisk.png", plot= ggpubr::ggarrange(FH.timeseries,FH.maps, ncol=1, nrow=2),
+       width = 8, height =8)
 
-png("08_HighFraction_FIGURE_ElevRisk.png", width = 600, height = 600)
 
-ggpubr::ggarrange(FH.timeseries,FH.maps, ncol=1, nrow=2)
-dev.off()
 
 
 # Elevatd Risk timeseries by region
@@ -386,8 +381,9 @@ p.pist <- fh.ts.plot.species (data.est = Frac.High.est, colname.est="PIST",
 p.piar <- fh.ts.plot.species (data.est = Frac.High.est, colname.est="PIAR",
                               data.inv= Frac.High.inv, colname.inv ="PIAR")
 
-png("08_HighFraction_FIGURE_ElevRisk_Species.png", width = 1000, height = 1000)
-ggpubr::ggarrange( 
+
+ggsave(filename="08_HighFraction_FIGURE_ElevRisk_Species.png", width = 9, height = 9, dpi=300,
+plot =ggpubr::ggarrange( 
   p.piba ,
   p.pial,
   p.pifl2,
@@ -395,6 +391,6 @@ ggpubr::ggarrange(
   p.pist,
   p.piar,
   ncol=2, nrow=3,labels=c("a", "b", "c", "d", "e", "f"),
-  font.label = list(size = 18, color = "black", face = "bold", family = NULL))
+  font.label = list(size = 18, color = "black", face = "bold", family = NULL)) )
 
-dev.off()
+

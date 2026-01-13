@@ -14,7 +14,6 @@ setwd(data.dir)
 
 ensemble.est <- rast( paste(data.dir,"/Ensemble_1980-2099_EST.tif", sep=""))
 ensemble.inv <- rast( paste(data.dir,"/Ensemble_1980-2099_INV.tif", sep=""))
-
 load( "Final_ShapeFiles.RDATA")
 
 sf.summary <- function (raster, SP){
@@ -56,11 +55,9 @@ table.SD <- function(FUN, raster.inv, raster.est ){
 
 # Summarize MODEL Layers: ####
 
-Table.5.Current <- table.SD ( FUN =sf.summary,
+Table.Current <- table.SD ( FUN =sf.summary,
                         raster.inv= ensemble.inv[[1:44]],
                         raster.est= ensemble.est[[1:44]])
-
-write.csv(Table.5.Current, paste(data.dir,"/SD_Tabel_5.csv", sep = ""))
 
 # Nature Manuscript: ####
 
@@ -173,9 +170,7 @@ Table.Future <- regional.table( FUN =sf.summary ,
                           raster.inv= ensemble.inv[[45:114]],
                           raster.est= ensemble.est[[45:114]])
 
-
 write.csv(Table.Current, "/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/WPBR/NewData/Final Scripts/FIGURES/08_Model_Current-Summary_Table.csv")
-
 write.csv(Table.Future , "/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/WPBR/NewData/Final Scripts/FIGURES/08_Model_Future-Summary_Table.csv")
 
 # High Fraction Table: ####
@@ -281,7 +276,4 @@ FH.Table.est <- FH.Table1(raster = ensemble.est)
 # Regional Summaries Figures:
 
 Table.Current <- read.csv("/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/WPBR/NewData/Final Scripts/FIGURES/08_Model_Current-Summary_Table.csv")
-
-
 Table.Current %>% ggplot( aes( x=id, y = mean.x)) + geom_bar(stat = "identity")
-

@@ -203,8 +203,8 @@ PLOT.H_ZONE <- Sensitivity  %>% ggplot() + geom_smooth(method = 'loess',aes( y =
 
 PLOT.StreamDen <- Sensitivity  %>% ggplot() + geom_smooth(method = 'loess',aes( y = Established, x= StreamDen), col="Black") + geom_smooth(method = 'loess',aes( y = Invading, x= StreamDen), col="Grey50", linetype="dashed") + 
   xlab("STREAM_DEN") + ylab("P(WPBR)") + theme_bw()+ylim(0.2,0.8)+ 
-  annotate( geom="text", x=12, y= 0.65, label="Established", col="black", size=8) +
-  annotate( geom="text", x=10, y= 0.25, label="Invading", col="grey50", size=8) +
+  annotate( geom="text", x=12, y= 0.65, label="High", col="black", size=8) +
+  annotate( geom="text", x=10, y= 0.25, label="Low", col="grey50", size=8) +
   theme(text = element_text(size = 20))
 
 PLOT.TRI <- Sensitivity.TRI  %>% ggplot() + 

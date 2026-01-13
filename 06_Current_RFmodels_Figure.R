@@ -20,6 +20,7 @@ AOI = AOI::aoi_get(state = c("CO", "WA", "OR", "CA", "MT", "ID", "UT", "AZ", "NV
 # Mean conditions 1980-2023:
 ensemble.est.mean <- ensemble.est[[1:44]] %>% mean(na.rm=T)
 ensemble.inv.mean <- ensemble.inv[[1:44]] %>% mean(na.rm=T)
+
 ensemble.est.stdev <- ensemble.est[[1:44]] %>% stdev(na.rm=T)
 ensemble.inv.stdev <- ensemble.inv[[1:44]] %>% stdev(na.rm=T)
 
@@ -34,11 +35,13 @@ names( ensemble.inv.sum ) <- c("mean","sd")
 
 val.df <- c(ensemble.est.mean,  ensemble.inv.mean) %>% as.data.frame
 names(val.df) <- c("est", "inv")
+
 lm(val.df$est ~ val.df$inv) %>% summary
 
 # Description of 2020 results:
 df.est <- as.data.frame(ensemble.est.sum) %>% na.omit()
 df.inv <- as.data.frame(ensemble.inv.sum) %>% na.omit()
+
 
 # Percentage of the landscape with a greather than 50% probaility:
 P.50 <- function(x ){
@@ -49,8 +52,10 @@ P.50 <- function(x ){
 P.50(df.est$mean)
 P.50(df.inv$mean)
 
+
 summary(df.est$sd)
 summary(df.inv$sd)
+
 # 
 library(tidyterra)
 library(ggplot2)
@@ -111,6 +116,15 @@ ggpubr::ggarrange(P_WPBR_2020,
 P_WPBR_2020_SD, ncol=1, nrow=2)
 dev.off()
 
+library(ggpubr)
+
+setwd(figure.dir)
+ggsave(filename="07_CURRENT_RFMODELS_Figure3.png", 
+       plot= ggpubr::ggarrange(P_WPBR_2020,
+                               P_WPBR_2020_SD, 
+                               ncol=1, nrow=2) ,  width = 8, height =8, dpi=300)
+
+
 # Overlap:
 ensemble <- c(ensemble.est.sum, ensemble.inv.sum)
 names(ensemble) <- c('est.mean', "est.sd", 'inv.mean', "inv.sd")
@@ -121,4 +135,3 @@ cor(df.ensemble$est.mean,df.ensemble$inv.mean, method = "pearson")
 summary(lm(df.ensemble$est.mean~df.ensemble$inv.mean))
 
 #EOF
-
